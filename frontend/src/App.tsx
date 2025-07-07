@@ -8,6 +8,8 @@ import Partners from '@/components/Partners';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import Dashboard from '@/components/Dashboard';
+import Login from '@/pages/Login';
+import AuthGuard from '@/components/AuthGuard';
 import './App.css';
 
 const HomePage = () => (
@@ -27,7 +29,12 @@ const App: React.FC = () => {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={
+            <AuthGuard>
+              <Dashboard />
+            </AuthGuard>
+          } />
         </Routes>
       </Router>
     </ThemeProvider>

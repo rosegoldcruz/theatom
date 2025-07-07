@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/lib/supabaseClient';
+import { LogOut } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [amount, setAmount] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
 
   const stats = [
     { label: 'Total Trades', value: '1,247', change: '+12.5%' },
@@ -26,13 +35,23 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-black via-purple-900/20 to-black p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">
-            <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              ATOM Dashboard
-            </span>
-          </h1>
-          <p className="text-gray-400">Trustless arbitrage execution terminal</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">
+              <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                ATOM Dashboard
+              </span>
+            </h1>
+            <p className="text-gray-400">Trustless arbitrage execution terminal</p>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
         </div>
 
         {/* Wallet Connection */}
