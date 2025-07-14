@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { NetworkSelector } from './NetworkSelector';
 import { ThemeCustomizer } from './ThemeCustomizer';
-import { FakeDataGenerator, generateFakeStats, generateFakeOpportunities } from './FakeDataGenerator';
-import { generateMockOpportunities, generateNetworkStats, generateRecentTrades } from '../data/mockOpportunities';
+import { useRealData, useNetworkStats } from '../hooks/useRealData';
 import OpportunitiesTable from './OpportunitiesTable';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -32,32 +31,30 @@ interface UIState {
 }
 
 export const EnhancedBotDashboard: React.FC = () => {
-  const [selectedNetwork, setSelectedNetwork] = useState('ethereum');
+  const [selectedNetwork, setSelectedNetwork] = useState('base'); // 🔥 DEFAULT TO BASE SEPOLIA
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [colorTheme, setColorTheme] = useState('blue');
   const [brandingMode, setBrandingMode] = useState('arbitrage');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [walletAddress] = useState('0x742d35Cc6634C0532925a3b8D4e4D4c7b0e4c4e4');
-  
+
   const [uiState, setUiState] = useState<UIState>({
     isLoading: false,
-    isTestMode: true,
+    isTestMode: false, // 🔥 NO MORE TEST MODE - THIS IS REAL!
     botStatus: 'idle',
     connectionStatus: 'connected'
   });
 
-  const [stats, setStats] = useState(() => generateFakeStats());
-  const [opportunities, setOpportunities] = useState(() => generateFakeOpportunities(5));
-  const [networkStats, setNetworkStats] = useState(() => generateNetworkStats(selectedNetwork));
-  const [recentTrades, setRecentTrades] = useState(() => generateRecentTrades(selectedNetwork));
-  const [realOpportunities, setRealOpportunities] = useState(() => generateMockOpportunities(selectedNetwork));
+  // 🔥 REAL DATA HOOKS - DEATH TO FAKE DATA!
+  const realData = useRealData(walletAddress);
+  const realNetworkStats = useNetworkStats(selectedNetwork);
 
+  // 🔥 REAL-TIME DATA UPDATES
   useEffect(() => {
-    // Update data when network changes
-    setNetworkStats(generateNetworkStats(selectedNetwork));
-    setRecentTrades(generateRecentTrades(selectedNetwork));
-    setRealOpportunities(generateMockOpportunities(selectedNetwork));
-  }, [selectedNetwork]);
+    if (selectedNetwork === 'base') {
+      realData.refreshData();
+    }
+  }, [selectedNetwork, realData.refreshData]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -145,16 +142,18 @@ export const EnhancedBotDashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
-            {/* Quick Stats */}
+            {/* 🔥 REAL STATS - NO MORE FAKE BULLSHIT */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-2xl font-bold text-green-600">
-                        ${stats.totalProfit.toFixed(2)}
+                        ${realData.stats.totalProfit.toFixed(4)} ETH
                       </div>
-                      <div className="text-sm text-gray-600">Total Profit</div>
+                      <div className="text-sm text-gray-600">
+                        Real Profit {realData.stats.networkStatus === 'connected' ? '🟢' : '🔴'}
+                      </div>
                     </div>
                     <TrendingUp className="h-8 w-8 text-green-500" />
                   </div>
@@ -162,25 +161,28 @@ export const EnhancedBotDashboard: React.FC = () => {
               </Card>
               <Card>
                 <CardContent className="p-4">
-                  <div className="text-2xl font-bold">{stats.totalTrades}</div>
-                  <div className="text-sm text-gray-600">Total Trades</div>
-                  <Progress value={stats.successRate} className="mt-2" />
+                  <div className="text-2xl font-bold">{realData.recentTrades.length}</div>
+                  <div className="text-sm text-gray-600">Real Trades</div>
+                  <Progress value={realData.stats.successRate} className="mt-2" />
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4">
                   <div className="text-2xl font-bold text-blue-600">
-                    {stats.successRate.toFixed(1)}%
+                    {realData.stats.successRate.toFixed(1)}%
                   </div>
-                  <div className="text-sm text-gray-600">Success Rate</div>
+                  <div className="text-sm text-gray-600">Live Success Rate</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4">
                   <div className="text-2xl font-bold">
-                    {Math.floor(stats.avgGasUsed).toLocaleString()}
+                    {realData.stats.activeOpportunities}
                   </div>
-                  <div className="text-sm text-gray-600">Avg Gas Used</div>
+                  <div className="text-sm text-gray-600">Active Opportunities</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    Gas: {realData.stats.gasPrice} gwei
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -214,12 +216,23 @@ export const EnhancedBotDashboard: React.FC = () => {
                   >
                     Stop Bot
                   </Button>
-                  <div className="flex items-center gap-2 ml-auto">
-                    <span className="text-sm">Test Mode</span>
-                    <Switch 
-                      checked={uiState.isTestMode} 
-                      onCheckedChange={toggleTestMode}
-                    />
+                  <div className="flex items-center gap-4 ml-auto">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">🔥 Real-Time</span>
+                      <Switch
+                        checked={realData.isRealTimeEnabled}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            realData.enableRealTimeUpdates();
+                          } else {
+                            realData.disableRealTimeUpdates();
+                          }
+                        }}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {realData.isLoading ? 'Loading...' : `Updated: ${new Date(realData.lastUpdated).toLocaleTimeString()}`}
+                    </div>
                   </div>
                 </div>
               </CardContent>

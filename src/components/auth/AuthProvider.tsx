@@ -2,9 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { User, Session } from '@supabase/supabase-js';
 
-// Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ngyylrygxroocpttizgo.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXlscnlneHJvb2NwdHRpemdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDM1NzIsImV4cCI6MjA2NzY3OTU3Mn0.Eap0yphzVPlgGW3FM5NHE01DFW-5D5ehqBEuOieu68A';
+// Supabase client - Fixed environment variable names for Vercel
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ngyylrygxroocpttizgo.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5neXlscnlneHJvb2NwdHRpemdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxMDM1NzIsImV4cCI6MjA2NzY3OTU3Mn0.Eap0yphzVPlgGW3FM5NHE01DFW-5D5ehqBEuOieu68A';
+
+console.log('Supabase Config:', {
+  url: supabaseUrl,
+  hasKey: !!supabaseAnonKey,
+  env: import.meta.env.NODE_ENV
+});
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Using fallback Supabase configuration');

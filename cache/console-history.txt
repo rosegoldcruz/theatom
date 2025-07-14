@@ -1,0 +1,8 @@
+.exit
+Object.keys(atomContract.interface.functions)
+Object.getOwnPropertyNames(atomContract.interface.functions)
+await atomContract.paused()
+await atomContract.owner()
+const atomContract = await ethers.getContractAt("BaseAtomArbitrage", "0xb3800E6bC7847E5d5a71a03887EDc5829DF4133b")
+const contract = await ethers.getContractAt("BaseAtomArbitrage", "0xb3800E6bC7847E5d5a71a03887EDc5829DF4133b")
+const contract = await ethers.getContractAt("ArbitrageBot", "0xb3800E6bC7847E5d5a71a03887EDc5829DF4133b")
