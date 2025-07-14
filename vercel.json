@@ -1,15 +1,5 @@
 {
   "version": 2,
-  "name": "atom-arbitrage-platform",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
   "functions": {
     "src/pages/api/**/*.ts": {
       "runtime": "@vercel/node"
