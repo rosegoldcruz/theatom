@@ -1,8 +1,14 @@
-import LandingPage from '../components/LandingPage';
+'use client';
+
+import { AppProvider } from '@/contexts/AppContext';
+import { ATOMTradingSystem } from '@/components/ATOMTradingSystem';
 
 export default function HomePage() {
-  // Using the enhanced LandingPage component with Apple-style UI
-  return <LandingPage />;
+  return (
+    <AppProvider>
+      <ATOMTradingSystem />
+    </AppProvider>
+  );
 }
 
 
