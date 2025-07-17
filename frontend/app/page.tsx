@@ -106,7 +106,7 @@ const ATOMArbitrageSystem = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold">ATOM</h1>
-              <p className="text-sm text-gray-500">Arbitrage System</p>
+              <p className="text-sm text-gray-500">Arbitrage Trading System</p>
             </div>
           </div>
         </div>
