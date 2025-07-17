@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -125,7 +126,7 @@ interface ICurveRegistry {
     ) external view returns (int128, int128, bool);
 }
 
-contract AtomArbitrage is IFlashLoanSimpleReceiver, IFlashLoanRecipient, ReentrancyGuard, Ownable {
+contract AtomArbitrage is IFlashLoanSimpleReceiver, IFlashLoanRecipient, ReentrancyGuard, Ownable, Pausable {
     using SafeERC20 for IERC20;
 
     // AAVE V3 Pool Addresses Provider (Mainnet)
@@ -229,7 +230,7 @@ contract AtomArbitrage is IFlashLoanSimpleReceiver, IFlashLoanRecipient, Reentra
         address asset,
         uint256 amount,
         bytes calldata params
-    ) external onlyOwner nonReentrant {
+    ) external onlyOwner nonReentrant whenNotPaused {
         require(amount <= MAX_FLASH_LOAN_AMOUNT, "Amount exceeds $10M limit");
 
         // Decode params to check gas limits
@@ -526,7 +527,7 @@ contract AtomArbitrage is IFlashLoanSimpleReceiver, IFlashLoanRecipient, Reentra
      * @dev Simulate buy order on specified DEX (view function)
      */
     function _simulateBuy(
-        address, /* tokenIn */
+        address /* tokenIn */,
         uint256 amountIn,
         DEX dex,
         bytes calldata data
@@ -634,4 +635,57 @@ contract AtomArbitrage is IFlashLoanSimpleReceiver, IFlashLoanRecipient, Reentra
     function withdrawToken(address token, uint256 amount) external onlyOwner {
         IERC20(token).safeTransfer(owner(), amount);
     }
+
+    // 🚨 EMERGENCY SECURITY FUNCTIONS
+
+    /**
+     * @dev Emergency pause - stops all arbitrage operations
+     * @notice Can only be called by owner in emergency situations
+     */
+    function emergencyPause() external onlyOwner {
+        _pause();
+        emit EmergencyPause(msg.sender, block.timestamp);
+    }
+
+    /**
+     * @dev Emergency unpause - resumes arbitrage operations
+     * @notice Can only be called by owner after emergency is resolved
+     */
+    function emergencyUnpause() external onlyOwner {
+        _unpause();
+        emit EmergencyUnpause(msg.sender, block.timestamp);
+    }
+
+    /**
+     * @dev Emergency withdraw all funds
+     * @notice Withdraws all ETH and specified tokens in emergency
+     */
+    function emergencyWithdrawAll(address[] calldata tokens) external onlyOwner {
+        // Withdraw all ETH
+        if (address(this).balance > 0) {
+            payable(owner()).transfer(address(this).balance);
+        }
+
+        // Withdraw all specified tokens
+        for (uint256 i = 0; i < tokens.length; i++) {
+            uint256 balance = IERC20(tokens[i]).balanceOf(address(this));
+            if (balance > 0) {
+                IERC20(tokens[i]).safeTransfer(owner(), balance);
+            }
+        }
+
+        emit EmergencyWithdrawal(msg.sender, tokens, block.timestamp);
+    }
+
+    /**
+     * @dev Check if contract is paused
+     */
+    function isPaused() external view returns (bool) {
+        return paused();
+    }
+
+    // 📊 SECURITY EVENTS
+    event EmergencyPause(address indexed caller, uint256 timestamp);
+    event EmergencyUnpause(address indexed caller, uint256 timestamp);
+    event EmergencyWithdrawal(address indexed caller, address[] tokens, uint256 timestamp);
 }

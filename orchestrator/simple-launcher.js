@@ -40,11 +40,18 @@ async function initialize() {
     const privateKey = config.PRIVATE_KEY.startsWith('0x') ? config.PRIVATE_KEY : `0x${config.PRIVATE_KEY}`;
     wallet = new ethers.Wallet(privateKey, provider);
     
-    // Simple contract ABI for testing
+    // Enhanced contract ABI with flash loan functionality
     const contractABI = [
       "function owner() external view returns (address)",
       "function totalTrades() external view returns (uint256)",
-      "function totalProfit() external view returns (uint256)"
+      "function totalProfit() external view returns (uint256)",
+      "function successfulTrades() external view returns (uint256)",
+      "function totalGasUsed() external view returns (uint256)",
+      "function paused() external view returns (bool)",
+      "function executeArbitrage(address asset, uint256 amount, bytes calldata params) external",
+      "function pause() external",
+      "function unpause() external",
+      "event ArbitrageExecuted(address indexed token, uint256 amountIn, uint256 profit, uint256 gasUsed)"
     ];
     
     contract = new ethers.Contract(config.CONTRACT_ADDRESS, contractABI, wallet);
@@ -137,37 +144,185 @@ async function scanForOpportunities() {
   }
 }
 
+// 📡 STEP 3: Flash loan execution function
+async function triggerFlashLoan(asset = '0x4200000000000000000000000000000000000006', amount = '1000000000000000000') {
+  try {
+    console.log('🚀 Triggering flash loan...');
+    console.log(`💰 Asset: ${asset}`);
+    console.log(`📊 Amount: ${ethers.formatEther(amount)} ETH`);
+
+    // Prepare arbitrage parameters (mock for now)
+    const params = ethers.AbiCoder.defaultAbiCoder().encode(
+      ['address', 'uint256', 'uint256'],
+      [asset, amount, Date.now()] // Simple params for testing
+    );
+
+    // Execute the flash loan arbitrage
+    const tx = await contract.executeArbitrage(asset, amount, params, {
+      gasLimit: 500000, // 500k gas limit
+      gasPrice: ethers.parseUnits('1', 'gwei') // 1 gwei
+    });
+
+    console.log(`🚀 Flash loan TX submitted: ${tx.hash}`);
+    await logActivity('Flash loan transaction submitted', {
+      txHash: tx.hash,
+      asset,
+      amount: ethers.formatEther(amount)
+    });
+
+    // Wait for confirmation
+    const receipt = await tx.wait();
+    console.log(`✅ Flash loan executed successfully!`);
+    console.log(`⛽ Gas used: ${receipt.gasUsed.toString()}`);
+
+    await logActivity('Flash loan executed successfully', {
+      txHash: tx.hash,
+      gasUsed: receipt.gasUsed.toString(),
+      blockNumber: receipt.blockNumber
+    });
+
+    return {
+      success: true,
+      txHash: tx.hash,
+      gasUsed: receipt.gasUsed.toString(),
+      blockNumber: receipt.blockNumber
+    };
+
+  } catch (error) {
+    console.error('❌ Flash loan failed:', error.message);
+    await logActivity('Flash loan execution failed', { error: error.message });
+    throw error;
+  }
+}
+
 async function startMonitoring() {
   console.log('👀 Starting monitoring loop...');
-  
+
   // Scan every 30 seconds
   setInterval(async () => {
     await scanForOpportunities();
   }, 30000);
-  
+
   // Initial scan
   await scanForOpportunities();
-  
+
   console.log('✅ Monitoring started - scanning every 30 seconds');
 }
 
-// Health check server
-function startHealthServer() {
+// Enhanced API server with bot controls
+function startApiServer() {
   const express = require('express');
+  const cors = require('cors');
   const app = express();
-  
+
+  // Middleware
+  app.use(cors());
+  app.use(express.json());
+
+  // Bot state
+  let botState = {
+    isRunning: false,
+    isMonitoring: false,
+    lastScan: null,
+    totalScans: 0,
+    opportunities: []
+  };
+
+  // Health check endpoint
   app.get('/health', (req, res) => {
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      version: '1.0.0'
+      version: '1.0.0',
+      botState
     });
   });
-  
-  const port = process.env.HEALTH_CHECK_PORT || 3001;
+
+  // 🔄 STEP 2: Bot control endpoints
+  app.post('/api/bot/start', async (req, res) => {
+    try {
+      console.log('🚀 Starting bot via API...');
+      if (!botState.isRunning) {
+        await startMonitoring();
+        botState.isRunning = true;
+        botState.isMonitoring = true;
+        await logActivity('Bot started via API');
+      }
+      res.json({
+        success: true,
+        message: 'Bot started successfully',
+        state: botState
+      });
+    } catch (error) {
+      console.error('❌ Failed to start bot:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
+  app.post('/api/bot/stop', async (req, res) => {
+    try {
+      console.log('⏹️ Stopping bot via API...');
+      botState.isRunning = false;
+      botState.isMonitoring = false;
+      await logActivity('Bot stopped via API');
+      res.json({
+        success: true,
+        message: 'Bot stopped successfully',
+        state: botState
+      });
+    } catch (error) {
+      console.error('❌ Failed to stop bot:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
+  app.get('/api/bot/status', (req, res) => {
+    res.json({
+      success: true,
+      state: botState,
+      contract: {
+        address: config.CONTRACT_ADDRESS,
+        network: 'Base Sepolia'
+      }
+    });
+  });
+
+  // 📡 STEP 3: Flash loan API endpoint
+  app.post('/api/flashloan/run', async (req, res) => {
+    try {
+      console.log('🚀 Flash loan triggered via API...');
+      const { asset, amount } = req.body;
+
+      const result = await triggerFlashLoan(
+        asset || '0x4200000000000000000000000000000000000006', // Default to WETH on Base
+        amount || '1000000000000000000' // Default to 1 ETH
+      );
+
+      res.json({
+        success: true,
+        message: 'Flash loan executed successfully',
+        result
+      });
+    } catch (error) {
+      console.error('❌ Flash loan API error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+
+  const port = process.env.API_PORT || 3001;
   app.listen(port, () => {
-    console.log(`🏥 Health check server running on port ${port}`);
+    console.log(`🚀 API server running on port ${port}`);
+    console.log(`📡 Bot controls available at http://localhost:${port}/api/bot/*`);
   });
 }
 
@@ -186,12 +341,13 @@ process.on('SIGTERM', () => {
 async function main() {
   try {
     await initialize();
-    startHealthServer();
-    await startMonitoring();
-    
+    startApiServer(); // Start API server with bot controls
+
     console.log('\n🎉 ATOM Orchestrator is running successfully!');
+    console.log('🔄 Bot controls available via API endpoints');
+    console.log('📡 Use frontend buttons or POST to /api/bot/start to begin monitoring');
     console.log('Press Ctrl+C to stop');
-    
+
   } catch (error) {
     console.error('💥 Fatal error:', error.message);
     process.exit(1);

@@ -208,17 +208,7 @@ contract BaseAtomArbitrage is IFlashLoanSimpleReceiver, IFlashLoanRecipient, Ree
 
     receive() external payable {}
 
-    /**
-     * @dev Modifier to ensure gas costs don't exceed $20
-     */
-    modifier gasProtection(uint256 estimatedGasUnits, uint256 maxGasPrice) {
-        // Calculate gas cost in USD
-        uint256 gasCostUSD = (estimatedGasUnits * tx.gasprice * ETH_PRICE_USD) / 1e18;
 
-        require(gasCostUSD <= MAX_GAS_COST_USD, "Gas cost exceeds $20 maximum");
-        require(tx.gasprice <= maxGasPrice, "Gas price exceeds user limit");
-        _;
-    }
 
     /**
      * @dev Execute arbitrage using AAVE flash loan (up to $10M)
