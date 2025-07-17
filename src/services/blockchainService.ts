@@ -1,9 +1,11 @@
 import { ethers } from 'ethers';
 
-// Environment configuration
-const BASE_SEPOLIA_RPC = import.meta.env.VITE_BASE_SEPOLIA_RPC_URL || 'https://base-sepolia.g.alchemy.com/v2/ESBtk3UKjPt2rK2Yz0hnzUj0tIJGTe-d';
-const CONTRACT_ADDRESS = import.meta.env.VITE_BASE_SEPOLIA_CONTRACT_ADDRESS || '0xFc905877348deA2f91000fe99F94E0AfAEDEB590';
+// Environment configuration - QuickNode Base Sepolia
+const BASE_SEPOLIA_RPC = import.meta.env.VITE_BASE_SEPOLIA_RPC_URL || 'https://nameless-misty-pool.base-sepolia.quiknode.pro/6d60e9cd97d2fc31ceade73f41dd089d507fb19b/';
+const BASE_SEPOLIA_WSS = import.meta.env.VITE_BASE_SEPOLIA_WSS_URL || 'wss://nameless-misty-pool.base-sepolia.quiknode.pro/6d60e9cd97d2fc31ceade73f41dd089d507fb19b/';
+const CONTRACT_ADDRESS = import.meta.env.VITE_BASE_SEPOLIA_CONTRACT_ADDRESS || '0xb3800E6bC7847E5d5a71a03887EDc5829DF4133b';
 const PRIVATE_KEY = import.meta.env.VITE_PRIVATE_KEY;
+const ENABLE_REAL_DATA = import.meta.env.VITE_ENABLE_REAL_DATA === 'true';
 
 // Contract ABI (simplified for arbitrage operations)
 const ARBITRAGE_ABI = [
@@ -40,13 +42,26 @@ export interface RealTradeData {
 
 class BlockchainService {
   private provider: ethers.JsonRpcProvider;
+  private wsProvider?: ethers.WebSocketProvider;
   private contract: ethers.Contract;
+  private wsContract?: ethers.Contract;
   private wallet?: ethers.Wallet;
 
   constructor() {
+    // HTTP Provider for regular calls
     this.provider = new ethers.JsonRpcProvider(BASE_SEPOLIA_RPC);
     this.contract = new ethers.Contract(CONTRACT_ADDRESS, ARBITRAGE_ABI, this.provider);
-    
+
+    // WebSocket Provider for real-time events
+    if (ENABLE_REAL_DATA) {
+      try {
+        this.wsProvider = new ethers.WebSocketProvider(BASE_SEPOLIA_WSS);
+        this.wsContract = new ethers.Contract(CONTRACT_ADDRESS, ARBITRAGE_ABI, this.wsProvider);
+      } catch (error) {
+        console.warn('WebSocket connection failed, using HTTP only:', error);
+      }
+    }
+
     if (PRIVATE_KEY) {
       this.wallet = new ethers.Wallet(PRIVATE_KEY, this.provider);
       this.contract = this.contract.connect(this.wallet);
@@ -163,35 +178,80 @@ class BlockchainService {
     }
   }
 
-  // Real-time monitoring
+  // Real-time monitoring with WebSocket support
   startEventListening(callback: (event: any) => void) {
-    this.contract.on('ArbitrageExecuted', (token, profit, timestamp, event) => {
+    const contractToUse = this.wsContract || this.contract;
+
+    // Listen for arbitrage execution events
+    contractToUse.on('ArbitrageExecuted', (token, profit, timestamp, event) => {
       callback({
         type: 'trade_executed',
         data: {
           token,
           profit: ethers.formatEther(profit),
           timestamp: Number(timestamp) * 1000,
-          txHash: event.transactionHash
+          txHash: event.transactionHash,
+          blockNumber: event.blockNumber
         }
       });
     });
 
-    this.contract.on('OpportunityDetected', (pair, profitEstimate, timestamp, event) => {
+    // Listen for opportunity detection events
+    contractToUse.on('OpportunityDetected', (pair, profitEstimate, timestamp, event) => {
       callback({
         type: 'opportunity_detected',
         data: {
           pair,
           profitEstimate: ethers.formatEther(profitEstimate),
           timestamp: Number(timestamp) * 1000,
-          txHash: event.transactionHash
+          txHash: event.transactionHash,
+          blockNumber: event.blockNumber
         }
       });
     });
+
+    // Listen for new blocks for real-time updates
+    if (this.wsProvider) {
+      this.wsProvider.on('block', (blockNumber) => {
+        callback({
+          type: 'new_block',
+          data: {
+            blockNumber,
+            timestamp: Date.now()
+          }
+        });
+      });
+    }
+
+    console.log('🔥 Real-time event listening started on Base Sepolia');
   }
 
   stopEventListening() {
     this.contract.removeAllListeners();
+    if (this.wsContract) {
+      this.wsContract.removeAllListeners();
+    }
+    if (this.wsProvider) {
+      this.wsProvider.removeAllListeners();
+    }
+    console.log('🔥 Event listening stopped');
+  }
+
+  // Test connection to Base Sepolia
+  async testConnection(): Promise<boolean> {
+    try {
+      const blockNumber = await this.provider.getBlockNumber();
+      const network = await this.provider.getNetwork();
+      console.log('🔥 Connected to Base Sepolia:', {
+        blockNumber,
+        chainId: network.chainId.toString(),
+        name: network.name
+      });
+      return true;
+    } catch (error) {
+      console.error('❌ Connection test failed:', error);
+      return false;
+    }
   }
 }
 

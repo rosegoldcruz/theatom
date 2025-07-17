@@ -261,8 +261,6 @@ contract AtomArbitrage is FlashLoanSimpleReceiverBase, ReentrancyGuard, Ownable,
     {
         require(msg.sender == address(this), "Internal function");
 
-        uint256 initialBalance = IERC20(params.tokenOut).balanceOf(address(this));
-
         // Execute buy on first DEX
         uint256 amountOut1 = _executeDEXSwap(
             params.tokenIn,
@@ -329,7 +327,7 @@ contract AtomArbitrage is FlashLoanSimpleReceiverBase, ReentrancyGuard, Ownable,
      */
     function _swapUniswapV2(
         address tokenIn,
-        address tokenOut,
+        address /* tokenOut */,
         uint256 amountIn,
         bytes memory swapData
     ) internal returns (uint256 amountOut) {
@@ -627,12 +625,12 @@ contract AtomArbitrage is FlashLoanSimpleReceiverBase, ReentrancyGuard, Ownable,
      * @dev Check if arbitrage is profitable
      */
     function checkProfitability(
-        address tokenIn,
-        address tokenOut,
+        address /* tokenIn */,
+        address /* tokenOut */,
         uint256 amountIn,
-        address[] calldata dexRouters,
-        bytes[] calldata swapData
-    ) external view returns (bool profitable, uint256 estimatedProfit) {
+        address[] calldata /* dexRouters */,
+        bytes[] calldata /* swapData */
+    ) external pure returns (bool profitable, uint256 estimatedProfit) {
         // This would typically call view functions on DEXes to estimate profit
         // Simplified implementation for demo
         return (true, amountIn / 100); // 1% profit estimate

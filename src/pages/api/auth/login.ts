@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { withRateLimit, authRateLimiter, rateLimitMonitor } from '../../../lib/rateLimiter';
+import { validateEmail, generateToken, verifyPassword } from '../../../lib/auth';
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
