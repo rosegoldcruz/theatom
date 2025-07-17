@@ -40,16 +40,16 @@ const ATOMArbitrageSystem = () => {
     { id: 4, pair: 'LINK/USDC', dex1: 'Uniswap V2', dex2: 'Balancer', spread: 0.67, profit: 1247.84, gas: 0.032, status: 'monitoring' }
   ]);
 
-  const networks = {
+  const networks: { [key: string]: { name: string; rpc: string; color: string; gasPrice: string } } = {
     ethereum: { name: 'Ethereum', rpc: 'Mainnet', color: 'bg-blue-500', gasPrice: '23 gwei' },
     polygon: { name: 'Polygon', rpc: 'Mainnet', color: 'bg-purple-500', gasPrice: '32 gwei' },
     arbitrum: { name: 'Arbitrum', rpc: 'One', color: 'bg-blue-600', gasPrice: '0.1 gwei' },
     optimism: { name: 'Optimism', rpc: 'Mainnet', color: 'bg-red-500', gasPrice: '0.001 gwei' }
   };
 
-  const themes = {
+  const themes: { [key: string]: string } = {
     blue: 'bg-blue-500',
-    green: 'bg-green-500', 
+    green: 'bg-green-500',
     purple: 'bg-purple-500',
     orange: 'bg-orange-500',
     red: 'bg-red-500',
@@ -670,7 +670,7 @@ const ATOMArbitrageSystem = () => {
     </div>
   );
 
-  const pages = {
+  const pages: { [key: string]: React.ReactElement } = {
     dashboard: <DashboardPage />,
     bot: <BotControlPage />,
     opportunities: <OpportunitiesPage />,
