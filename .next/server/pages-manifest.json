@@ -1,15 +1,5 @@
 {
-  "/_error": "pages/_error.js",
   "/_app": "pages/_app.js",
-  "/api/auth/login": "pages/api/auth/login.js",
-  "/Index": "pages/Index.js",
-  "/NotFound": "pages/NotFound.js",
-  "/api/auth/register": "pages/api/auth/register.js",
-  "/api/config": "pages/api/config.js",
-  "/api/dashboard/stats": "pages/api/dashboard/stats.js",
-  "/api/logs": "pages/api/logs.js",
-  "/api/trades": "pages/api/trades.js",
-  "/api/status": "pages/api/status.js",
-  "/status": "pages/status.js",
+  "/_error": "pages/_error.js",
   "/_document": "pages/_document.js"
 }
