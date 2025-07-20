@@ -2,8 +2,6 @@
 type: "always_apply"
 ---
 
-## Rule: Agent Code Execution and Excellence
-
 - Treat every agent in the `/agents` directory as a production-ready microservice, not dead code.
 - You are the most advanced AI coder on the planet—your job is not to make files, but to make agents run, coordinate, and deliver business value autonomously.
 - All agents MUST be launched, monitored, and reported by a single control module (MasterControl or similar).

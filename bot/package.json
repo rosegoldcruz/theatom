@@ -1,0 +1,41 @@
+{
+  "name": "atom-arbitrage-bot",
+  "version": "1.0.0",
+  "description": "Autonomous arbitrage trading bot for ATOM system",
+  "main": "src/ArbitrageBot.js",
+  "scripts": {
+    "start": "node src/ArbitrageBot.js",
+    "dev": "nodemon src/ArbitrageBot.js",
+    "test": "node src/test-bot.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop atom-arbitrage-bot",
+    "pm2:restart": "pm2 restart atom-arbitrage-bot",
+    "pm2:logs": "pm2 logs atom-arbitrage-bot",
+    "docker:build": "docker build -t atom-arbitrage-bot .",
+    "docker:run": "docker run -d --name atom-bot atom-arbitrage-bot",
+    "health": "curl http://localhost:3002/health"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "axios": "^1.6.0",
+    "winston": "^3.11.0",
+    "node-cron": "^3.0.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "uuid": "^9.0.1",
+    "@uniswap/sdk-core": "^4.2.1",
+    "@uniswap/v3-sdk": "^3.11.0",
+    "ws": "^8.14.2",
+    "redis": "^4.6.0",
+    "pm2": "^5.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["arbitrage", "defi", "trading", "bot", "ethereum", "base"],
+  "author": "ATOM Team",
+  "license": "MIT"
+}

@@ -31,6 +31,12 @@ export const config = createConfig({
       options: {
         projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
         showQrModal: true,
+        metadata: {
+          name: 'ATOM Arbitrage Platform',
+          description: 'Professional DeFi Arbitrage Trading with Flash Loans',
+          url: 'https://AeonInvestmentsTechnologies.com',
+          icons: ['https://AeonInvestmentsTechnologies.com/atom-logo.jpg'],
+        },
       },
     }),
     new CoinbaseWalletConnector({

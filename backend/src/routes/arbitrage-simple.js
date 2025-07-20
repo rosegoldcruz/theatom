@@ -30,13 +30,17 @@ const logger = winston.createLogger({
   ]
 });
 
-// Contract ABI with all critical functions
+// Contract ABI with flash loan support
 const CONTRACT_ABI = [
   "function executeArbitrage(address asset, uint256 amount, bytes calldata params) external returns (uint256 profit)",
+  "function executeFlashLoanArbitrage(address asset, uint256 amount, bytes calldata params) external",
   "function owner() external view returns (address)",
   "function paused() external view returns (bool)",
   "function getBalance(address token) external view returns (uint256)",
+  "function getTotalProfit() external view returns (uint256)",
+  "function getSuccessRate() external view returns (uint256)",
   "event ArbitrageExecuted(address indexed token, uint256 amountIn, uint256 profit, uint256 gasUsed)",
+  "event FlashLoanArbitrageExecuted(address indexed asset, uint256 amount, uint256 profit, uint256 flashLoanFee)",
   "event ArbitrageFailed(address indexed token, uint256 amountIn, string reason)"
 ];
 
@@ -121,38 +125,94 @@ router.post('/execute', async (req, res) => {
     // Initialize contract
     const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, wallet);
 
-    // Prepare arbitrage parameters
-    const arbitrageParams = ethers.AbiCoder.defaultAbiCoder().encode(
-      ['address', 'address', 'string', 'string', 'uint256'],
-      [tokenA, tokenB, buyDex, sellDex, minProfitWei]
-    );
+    // Check if this should use flash loans
+    const useFlashLoan = req.body.useFlashLoan || false;
+    const flashLoanAmount = req.body.flashLoanAmount || amountIn;
 
-    // Gas estimation with fallback
-    let gasEstimate;
-    try {
-      gasEstimate = await contract.executeArbitrage.estimateGas(
-        tokenA,
-        amountWei,
-        arbitrageParams
+    // Prepare arbitrage parameters
+    let arbitrageParams;
+    if (useFlashLoan) {
+      arbitrageParams = ethers.AbiCoder.defaultAbiCoder().encode(
+        ['address', 'address', 'string', 'string', 'uint256', 'uint256'],
+        [tokenA, tokenB, buyDex, sellDex, minProfitWei, ethers.parseEther(flashLoanAmount)]
       );
-    } catch (gasError) {
-      logger.warn('Gas estimation failed, using default', gasError);
-      gasEstimate = BigInt(500000); // Fallback gas limit
+    } else {
+      arbitrageParams = ethers.AbiCoder.defaultAbiCoder().encode(
+        ['address', 'address', 'string', 'string', 'uint256'],
+        [tokenA, tokenB, buyDex, sellDex, minProfitWei]
+      );
     }
 
-    const gasLimit = gasEstimate * 120n / 100n; // 20% buffer
+    // Gas estimation and execution
+    let gasEstimate;
+    let tx;
 
-    // Execute transaction with proper gas pricing
-    const tx = await contract.executeArbitrage(
-      tokenA,
-      amountWei,
-      arbitrageParams,
-      {
-        gasLimit,
-        maxFeePerGas: ethers.parseUnits('2', 'gwei'),
-        maxPriorityFeePerGas: ethers.parseUnits('1', 'gwei')
+    try {
+      if (useFlashLoan) {
+        // Flash loan execution
+        logger.info(`💰 Executing flash loan arbitrage: ${flashLoanAmount} ETH`);
+
+        gasEstimate = await contract.executeFlashLoanArbitrage.estimateGas(
+          tokenA,
+          ethers.parseEther(flashLoanAmount),
+          arbitrageParams
+        );
+
+        const gasLimit = gasEstimate * 120n / 100n; // 20% buffer
+
+        tx = await contract.executeFlashLoanArbitrage(
+          tokenA,
+          ethers.parseEther(flashLoanAmount),
+          arbitrageParams,
+          {
+            gasLimit,
+            maxFeePerGas: ethers.parseUnits('2', 'gwei'),
+            maxPriorityFeePerGas: ethers.parseUnits('1', 'gwei')
+          }
+        );
+      } else {
+        // Regular arbitrage execution
+        gasEstimate = await contract.executeArbitrage.estimateGas(
+          tokenA,
+          amountWei,
+          arbitrageParams
+        );
+
+        const gasLimit = gasEstimate * 120n / 100n; // 20% buffer
+
+        tx = await contract.executeArbitrage(
+          tokenA,
+          amountWei,
+          arbitrageParams,
+          {
+            gasLimit,
+            maxFeePerGas: ethers.parseUnits('2', 'gwei'),
+            maxPriorityFeePerGas: ethers.parseUnits('1', 'gwei')
+          }
+        );
       }
-    );
+    } catch (gasError) {
+      logger.warn('Gas estimation failed, using fallback', gasError);
+      gasEstimate = BigInt(800000); // Higher fallback for flash loans
+
+      const gasLimit = gasEstimate * 120n / 100n;
+
+      if (useFlashLoan) {
+        tx = await contract.executeFlashLoanArbitrage(
+          tokenA,
+          ethers.parseEther(flashLoanAmount),
+          arbitrageParams,
+          { gasLimit }
+        );
+      } else {
+        tx = await contract.executeArbitrage(
+          tokenA,
+          amountWei,
+          arbitrageParams,
+          { gasLimit }
+        );
+      }
+    }
 
     logger.info(`Transaction submitted: ${tx.hash}`);
 

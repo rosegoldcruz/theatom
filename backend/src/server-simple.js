@@ -10,6 +10,7 @@ dotenv.config();
 
 // Import routes
 const arbitrageRoutes = require('./routes/arbitrage-simple');
+const botManagementRoutes = require('./routes/bot-management');
 const opportunitiesRoutes = require('./routes/opportunities');
 const botRoutes = require('./routes/bot');
 const healthRoutes = require('./routes/health');
@@ -110,6 +111,9 @@ const rateLimitArbitrage = (req, res, next) => {
 
 // Routes
 app.use('/api/health', healthRoutes);
+
+// Bot management routes
+app.use('/api/bot', botManagementRoutes);
 
 // Arbitrage routes with validation
 app.use('/api/arbitrage', validateTestnetOnly, arbitrageRoutes);
