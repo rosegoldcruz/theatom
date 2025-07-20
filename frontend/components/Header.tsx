@@ -1,143 +1,113 @@
 'use client';
 
 import React from 'react';
-import { Menu, Sun, Moon, Wallet, Copy, ChevronDown } from 'lucide-react';
 import { useAppContext } from '@/contexts/AppContext';
 import { useWeb3 } from '@/hooks/useWeb3';
-import { NETWORKS, THEME_COLORS } from '@/constants/networks';
-import { Button } from '@/components/ui/button';
 import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+  Menu, ChevronDown, Wallet, Copy, Sun, Moon, 
+  Network, CheckCircle 
+} from 'lucide-react';
 
-interface HeaderProps {
-  className?: string;
-}
-
-export function Header({ className = '' }: HeaderProps) {
+export function Header() {
   const { state, actions } = useAppContext();
-  const { currentPage, theme, isDark, selectedNetwork, isMobile } = state;
-  const { isConnected, address, connect, disconnect } = useWeb3();
+  const { currentPage, isDark, isMobile, selectedNetwork, isWalletConnected, walletAddress, botStatus } = state;
+  const { connect } = useWeb3();
 
-  const handleNetworkChange = (networkId: string) => {
-    actions.setNetwork(networkId);
+  const networks = {
+    ethereum: { name: 'Ethereum', color: 'bg-blue-500', gasPrice: '23 gwei' },
+    polygon: { name: 'Polygon', color: 'bg-purple-500', gasPrice: '32 gwei' },
+    arbitrum: { name: 'Arbitrum', color: 'bg-blue-600', gasPrice: '0.1 gwei' },
+    optimism: { name: 'Optimism', color: 'bg-red-500', gasPrice: '0.001 gwei' }
   };
 
-  const handleWalletConnect = async () => {
-    if (isConnected) {
-      disconnect();
-      actions.disconnectWallet();
-    } else {
-      try {
-        await connect();
-        if (address) {
-          actions.connectWallet(address);
-        }
-      } catch (error) {
-        console.error('Failed to connect wallet:', error);
-      }
-    }
+  const themes = {
+    blue: 'bg-blue-500',
+    green: 'bg-green-500',
+    purple: 'bg-purple-500',
+    orange: 'bg-orange-500',
+    red: 'bg-red-500',
+    pink: 'bg-pink-500'
   };
-
-  const copyAddress = () => {
-    if (address) {
-      navigator.clipboard.writeText(address);
-    }
-  };
-
-  const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-  };
-
-  const headerClasses = `
-    ${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} 
-    border-b px-6 py-4 ${className}
-  `.trim();
 
   return (
-    <header className={headerClasses}>
+    <header className={`${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'} border-b px-6 py-4 shadow-sm`}>
       <div className="flex items-center justify-between">
-        {/* Left Section */}
+        {/* Left Side */}
         <div className="flex items-center space-x-4">
           {isMobile && (
-            <Button
-              variant="ghost"
-              size="icon"
+            <button 
               onClick={actions.toggleSidebar}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <Menu className="w-6 h-6" />
-            </Button>
+            </button>
           )}
           
-          <div className="flex items-center space-x-3">
-            <h2 className="text-2xl font-bold capitalize">{currentPage}</h2>
+          <div className="flex items-center space-x-4">
+            <h2 className="text-2xl font-bold capitalize">{currentPage.replace(/([A-Z])/g, ' $1').trim()}</h2>
             
-            {/* Live Indicator - only show when bot is running */}
-            <div className="flex items-center space-x-2 bg-green-100 text-green-700 px-3 py-1 rounded-full">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Live</span>
-            </div>
+            {/* Live Status Indicator */}
+            {botStatus === 'running' && (
+              <div className="flex items-center space-x-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium">Live Trading</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right Section */}
+        {/* Right Side */}
         <div className="flex items-center space-x-4">
           {/* Network Selector */}
-          <Select value={selectedNetwork} onValueChange={handleNetworkChange}>
-            <SelectTrigger className={`w-40 ${isDark ? 'border-gray-600 bg-gray-800' : 'border-gray-300 bg-white'}`}>
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 ${NETWORKS[selectedNetwork]?.color || 'bg-gray-500'} rounded-full`}></div>
-                <SelectValue />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(NETWORKS).map(([key, network]) => (
-                <SelectItem key={key} value={key}>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 ${network.color} rounded-full`}></div>
-                    <span>{network.name}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="relative">
+            <button className={`flex items-center space-x-2 px-3 py-2 rounded-lg border transition-colors ${
+              isDark 
+                ? 'border-gray-600 bg-gray-800 hover:bg-gray-700' 
+                : 'border-gray-300 bg-white hover:bg-gray-50'
+            }`}>
+              <div className={`w-3 h-3 ${networks[selectedNetwork as keyof typeof networks].color} rounded-full`}></div>
+              <span className="text-sm font-medium">{networks[selectedNetwork as keyof typeof networks].name}</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </div>
 
           {/* Wallet Connection */}
-          {isConnected && address ? (
-            <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
-              <Wallet className="w-4 h-4 text-green-500" />
-              <span className="text-sm">{formatAddress(address)}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={copyAddress}
+          {isWalletConnected ? (
+            <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
+              isDark ? 'bg-gray-800' : 'bg-gray-100'
+            }`}>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <Wallet className="w-4 h-4 text-green-500" />
+              </div>
+              <span className="text-sm font-medium">
+                {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+              </span>
+              <button 
+                onClick={() => navigator.clipboard.writeText(walletAddress)}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
               >
                 <Copy className="w-3 h-3" />
-              </Button>
+              </button>
             </div>
           ) : (
-            <Button 
-              onClick={handleWalletConnect}
-              className={`${THEME_COLORS[theme]} text-white hover:opacity-90`}
+            <button 
+              onClick={connect}
+              className={`${themes[state.theme]} text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium`}
             >
               Connect Wallet
-            </Button>
+            </button>
           )}
 
           {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button 
             onClick={actions.toggleDarkMode}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className={`p-2 rounded-lg transition-colors ${
+              isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
+            }`}
           >
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </Button>
+          </button>
         </div>
       </div>
     </header>

@@ -1,0 +1,85 @@
+{
+  "network": {
+    "name": "mainnet",
+    "rpc_url": "https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY",
+    "chain_id": 1,
+    "block_time": 12
+  },
+  "trading": {
+    "min_profit_wei": "10000000000000000",
+    "trade_amount_wei": "10000000000000000000",
+    "max_gas_price_gwei": 100,
+    "slippage_tolerance": 0.005,
+    "max_concurrent_trades": 3
+  },
+  "dexes": {
+    "uniswap_v2": {
+      "enabled": true,
+      "factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
+      "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+    },
+    "uniswap_v3": {
+      "enabled": true,
+      "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+      "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+    },
+    "sushiswap": {
+      "enabled": true,
+      "factory": "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+      "router": "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F"
+    },
+    "curve": {
+      "enabled": true,
+      "registry": "0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5"
+    }
+  },
+  "aggregators": {
+    "0x": {
+      "enabled": true,
+      "api_url": "https://api.0x.org",
+      "api_key": ""
+    },
+    "1inch": {
+      "enabled": true,
+      "api_url": "https://api.1inch.io/v5.0/1",
+      "api_key": ""
+    },
+    "paraswap": {
+      "enabled": true,
+      "api_url": "https://apiv5.paraswap.io",
+      "api_key": ""
+    }
+  },
+  "mev_protection": {
+    "flashbots_enabled": true,
+    "flashbots_relay": "https://relay.flashbots.net",
+    "private_mempool": true,
+    "rbf_enabled": true,
+    "max_priority_fee_gwei": 50
+  },
+  "cow_protocol": {
+    "enabled": true,
+    "settlement_contract": "0x9008D19f58AAbD9eD0D60971565AA8510560ab41",
+    "api_url": "https://api.cow.fi/mainnet/api/v1",
+    "order_validity_seconds": 3600
+  },
+  "flash_loans": {
+    "aave_enabled": true,
+    "aave_pool": "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9",
+    "balancer_enabled": true,
+    "balancer_vault": "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+  },
+  "monitoring": {
+    "telegram_enabled": false,
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "grafana_enabled": false,
+    "prometheus_port": 9090
+  },
+  "risk_management": {
+    "max_daily_loss_wei": "1000000000000000000",
+    "max_position_size_wei": "50000000000000000000",
+    "stop_loss_enabled": true,
+    "circuit_breaker_enabled": true
+  }
+}

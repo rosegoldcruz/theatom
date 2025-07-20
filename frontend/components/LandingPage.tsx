@@ -1,400 +1,204 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import {
-  Shield, 
-  TrendingUp, 
-  Lock, 
-  CheckCircle, 
-  Activity,
-  DollarSign,
-  Users,
-  Award,
-  ChevronRight,
-  BarChart3,
-  Zap,
-  Globe,
-  ArrowRight,
-  Star,
-  Eye,
-  EyeOff,
-  Clock,
-  Server,
-  Database,
-  CreditCard
+  Shield, ArrowRight, Activity, TrendingUp, Zap, BarChart3,
+  Users, Star, Lock, CheckCircle, Globe, Award, Clock,
+  DollarSign, Target, Eye, EyeOff, Wallet
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { Navbar } from './Navbar';
 
-interface Stats {
-  totalVolume: number;
-  activeTraders: number;
-  successRate: number;
-  profitGenerated: number;
+interface LandingPageProps {
+  onEnterApp: () => void;
 }
 
-interface LoginData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
-
-interface Feature {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  metric: string;
-  color: string;
-}
-
-interface TrustBadge {
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-interface Testimonial {
-  text: string;
-  author: string;
-  role: string;
-  verified: boolean;
-  profit: string;
-}
-
-export default function LandingPage() {
-  const [stats, setStats] = useState<Stats>({
-    totalVolume: 127843567,
-    activeTraders: 4328,
-    successRate: 94.7,
-    profitGenerated: 8742156
-  });
-
-  const [loginData, setLoginData] = useState<LoginData>({
-    email: '',
-    password: '',
-    rememberMe: false
-  });
-
+export function LandingPage({ onEnterApp }: LandingPageProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [countdown, setCountdown] = useState(5);
 
+  // Countdown timer effect
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const timer = setInterval(() => {
+      setCountdown(prev => prev === 1 ? 5 : prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
-  // Animate stats
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(prev => ({
-        totalVolume: prev.totalVolume + Math.floor(Math.random() * 10000),
-        activeTraders: prev.activeTraders + (Math.random() > 0.5 ? 1 : 0),
-        successRate: 94.7,
-        profitGenerated: prev.profitGenerated + Math.floor(Math.random() * 1000)
-      }));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const stats = {
+    totalVolume: 127900000,
+    successRate: 94.7,
+    activeTraders: 4338,
+    profitGenerated: 88751400
+  };
 
-  // Rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial(prev => (prev + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const features: Feature[] = [
+  const features = [
     {
       icon: Zap,
-      title: "Lightning-Fast Execution",
-      description: "Sub-millisecond trade execution with advanced smart routing",
-      metric: "< 50ms latency",
-      color: "from-yellow-400 to-orange-500"
+      title: 'Lightning-Fast Execution',
+      description: 'Sub-millisecond execution with advanced routing algorithms',
+      metric: '< 50ms latency'
     },
     {
       icon: Shield,
-      title: "Bank-Level Security",
-      description: "Military-grade encryption and multi-signature wallet protection",
-      metric: "SOC 2 Certified",
-      color: "from-blue-400 to-indigo-500"
+      title: 'Bank-Level Security',
+      description: 'Military-grade encryption and SOC 2 compliance',
+      metric: 'SOC 2 Certified'
     },
     {
       icon: BarChart3,
-      title: "AI-Powered Analysis",
-      description: "Machine learning algorithms identify opportunities 24/7",
-      metric: "94.7% accuracy",
-      color: "from-purple-400 to-pink-500"
+      title: 'AI-Powered Analysis',
+      description: '24/7 opportunity detection across 50+ exchanges',
+      metric: '94.7% accuracy'
     }
   ];
 
-  const trustBadges: TrustBadge[] = [
-    { name: "SEC Compliant", icon: Award },
-    { name: "FINRA Member", icon: Shield },
-    { name: "256-bit SSL", icon: Lock },
-    { name: "SOC 2 Type II", icon: CheckCircle }
+  const trustBadges = [
+    { icon: Shield, name: 'SEC Compliant' },
+    { icon: Lock, name: '256-bit SSL' },
+    { icon: CheckCircle, name: 'Audited' },
+    { icon: Globe, name: '99.9% Uptime' }
   ];
 
-  const testimonials: Testimonial[] = [
-    {
-      text: "ATOM's arbitrage detection is lightning fast. I've consistently earned 2-3% daily returns with minimal effort. The platform is intuitive and the security is top-notch.",
-      author: "Michael Chen",
-      role: "Professional Trader",
-      verified: true,
-      profit: "+$47,892"
-    },
-    {
-      text: "As an institutional investor, I need reliability. ATOM delivers with 99.9% uptime and consistent profits. Their AI truly gives us an edge in the market.",
-      author: "Sarah Williams",
-      role: "Hedge Fund Manager",
-      verified: true,
-      profit: "+$384,729"
-    },
-    {
-      text: "Started with just $5K and now managing a portfolio worth $150K+. ATOM's educational resources and support team made all the difference.",
-      author: "David Park",
-      role: "Independent Trader",
-      verified: true,
-      profit: "+$145,203"
-    }
-  ];
 
-  const exchanges = [
-    "Binance", "Coinbase", "Kraken", "Uniswap", "SushiSwap", 
-    "Curve", "Balancer", "dYdX", "1inch", "0x Protocol"
-  ];
 
-  const handleLogin = async () => {
-    try {
-      console.log('Login attempted with:', loginData);
-      // For demo purposes, simulate successful login
-      localStorage.setItem('auth-token', 'demo-token-' + Date.now());
-      localStorage.setItem('atom-user', JSON.stringify({
-        id: '1',
-        email: loginData.email,
-        name: loginData.email.split('@')[0]
-      }));
-      // Reload to trigger auth state change
-      window.location.reload();
-    } catch (error) {
-      console.error('Login error:', error);
-    }
+  const handleLogin = () => {
+    onEnterApp();
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 relative">
-                  <Image
-                    src="/atom-logo.jpg"
-                    alt="ATOM Arbitrage Trustless Logo"
-                    width={48}
-                    height={48}
-                    className="rounded-xl shadow-lg"
-                  />
-                </div>
-                <span className="font-bold text-2xl text-[#383838]">ATOM</span>
-              </div>
-              <div className="hidden md:flex space-x-6">
-                <a href="#platform" className="text-[#383838] hover:text-[#00a489] font-medium transition-colors">Platform</a>
-                <a href="#security" className="text-[#383838] hover:text-[#00a489] font-medium transition-colors">Security</a>
-                <a href="#pricing" className="text-[#383838] hover:text-[#00a489] font-medium transition-colors">Pricing</a>
-                <a href="#about" className="text-[#383838] hover:text-[#00a489] font-medium transition-colors">About</a>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="text-[#383838] hover:text-[#00a489] font-medium transition-colors hidden sm:block">
-                Sign In
-              </button>
-              <button className="bg-gradient-to-r from-[#00a489] to-[#4cb99f] text-white px-6 py-2.5 rounded-lg font-medium hover:shadow-lg transition-all transform hover:scale-105">
-                Start Trading
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        onSignIn={async () => {
+          await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback` } });
+        }}
+        onStartTrading={async () => {
+          await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback` } });
+        }}
+      />
 
       {/* Hero Section */}
-      <section className="relative pt-28 pb-20 bg-gradient-to-br from-gray-50 via-white to-gray-50 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#00a489] rounded-full filter blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#4cb99f] rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-[#00a489] rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        </div>
-        
+      <section className="relative bg-gradient-to-br from-gray-50 to-white py-20">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Messaging */}
             <div className="space-y-8">
               {/* Trust Badge */}
-              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#00a489]/10 to-[#4cb99f]/10 text-[#00a489] px-5 py-2.5 rounded-full border border-[#00a489]/20">
-                <Shield className="w-5 h-5" />
+              <div className="inline-flex items-center space-x-2 bg-[#00a489]/10 text-[#00a489] px-4 py-2 rounded-full">
+                <Shield className="w-4 h-4" />
                 <span className="text-sm font-semibold">SEC Compliant • Bank-Level Security • 99.9% Uptime</span>
               </div>
               
-              <div className="space-y-6">
-                {/* Prominent Logo Display */}
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-20 h-20 relative">
-                    <Image
-                      src="/atom-logo.jpg"
-                      alt="ATOM Arbitrage Trustless Logo"
-                      width={80}
-                      height={80}
-                      className="rounded-2xl shadow-xl"
-                    />
-                  </div>
-                  <div>
-                    <h1 className="text-5xl lg:text-6xl font-bold text-[#383838] leading-tight">
-                      Institutional-Grade
-                      <span className="block bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent">
-                        Arbitrage Trading
-                      </span>
-                    </h1>
-                  </div>
-                </div>
+              <div className="space-y-4">
+                <h1 className="text-5xl lg:text-6xl font-bold text-[#383838] leading-tight">
+                  Institutional-Grade
+                  <span className="block text-[#00a489]">Arbitrage Trading</span>
+                </h1>
                 <p className="text-xl text-gray-600 leading-relaxed">
                   Capture profit opportunities across 50+ exchanges with AI-powered arbitrage detection and automated execution. Join 4,000+ traders earning consistent returns.
                 </p>
               </div>
 
-              {/* Live Stats Grid */}
-              <div className="grid grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <DollarSign className="w-5 h-5 text-[#00a489]" />
-                    <span className="text-xs text-green-500 font-semibold">+12.3%</span>
-                  </div>
-                  <div className="text-2xl font-bold text-[#383838]">
-                    ${(stats.totalVolume / 1000000).toFixed(1)}M
-                  </div>
-                  <div className="text-sm text-gray-500">Monthly Volume</div>
-                </div>
-                <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <TrendingUp className="w-5 h-5 text-[#00a489]" />
-                    <span className="text-xs text-green-500 font-semibold">↑ High</span>
-                  </div>
-                  <div className="text-2xl font-bold text-[#383838]">
-                    {stats.successRate}%
-                  </div>
-                  <div className="text-sm text-gray-500">Success Rate</div>
-                </div>
-              </div>
+
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button
-                  onClick={() => {
-                    // Scroll to login form
-                    document.querySelector('#login-form')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="bg-gradient-to-r from-[#00a489] to-[#4cb99f] text-white px-8 py-4 rounded-xl font-semibold hover:shadow-xl transition-all transform hover:scale-105 flex items-center justify-center space-x-2"
+                <button 
+                  onClick={onEnterApp}
+                  className="bg-[#00a489] text-white px-8 py-4 rounded-lg font-semibold hover:bg-[#008a73] transition-all transform hover:scale-105 flex items-center justify-center space-x-2"
                 >
                   <span>Start Trading Now</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
-                <button
-                  onClick={() => {
-                    // Demo login
-                    localStorage.setItem('auth-token', 'demo-token-' + Date.now());
-                    localStorage.setItem('atom-user', JSON.stringify({
-                      id: 'demo',
-                      email: 'demo@atom.com',
-                      name: 'Demo User'
-                    }));
-                    window.location.reload();
-                  }}
-                  className="border-2 border-[#00a489] text-[#00a489] px-8 py-4 rounded-xl font-semibold hover:bg-gradient-to-r hover:from-[#00a489]/5 hover:to-[#4cb99f]/5 transition-all flex items-center justify-center space-x-2"
-                >
+                <button className="border-2 border-[#00a489] text-[#00a489] px-8 py-4 rounded-lg font-semibold hover:bg-[#00a489]/5 transition-all flex items-center justify-center space-x-2">
                   <span>View Live Demo</span>
                   <Activity className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Exchange Logos */}
-              <div className="pt-4">
-                <p className="text-sm text-gray-500 mb-3">Integrated with 50+ exchanges including:</p>
-                <div className="flex flex-wrap gap-3">
-                  {exchanges.slice(0, 5).map((exchange, index) => (
-                    <span key={index} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-                      {exchange}
-                    </span>
-                  ))}
-                  <span className="text-xs bg-[#00a489]/10 text-[#00a489] px-3 py-1 rounded-full font-semibold">
-                    +45 more
-                  </span>
-                </div>
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap gap-6 pt-4">
+                {trustBadges.map((badge, index) => (
+                  <div key={index} className="flex items-center space-x-2 text-gray-600">
+                    <badge.icon className="w-5 h-5 text-[#00a489]" />
+                    <span className="text-sm font-medium">{badge.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Right Column - Login Card */}
-            <div className="lg:pl-8">
-              <div id="login-form" className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 relative overflow-hidden">
-                {/* Card Background Pattern */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#00a489]/5 to-[#4cb99f]/5 rounded-full filter blur-2xl"></div>
-
-                <div className="relative space-y-6">
-                  <div className="text-center space-y-2">
-                    <h3 className="text-2xl font-bold text-[#383838]">Access Your Dashboard</h3>
-                    <p className="text-gray-600">Trade with confidence on our secure platform</p>
+            {/* Right Column - Login Form */}
+            <div className="lg:pl-12">
+              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold text-[#383838] mb-2">
+                      Access Your Dashboard
+                    </h3>
+                    <p className="text-gray-600">
+                      Trade with confidence on our secure platform
+                    </p>
                   </div>
 
-                  {/* Login Form */}
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email Address
+                      </label>
                       <input
                         type="email"
-                        value={loginData.email}
-                        onChange={(e) => setLoginData({...loginData, email: e.target.value})}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a489] focus:border-transparent transition-all outline-none"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a489] focus:border-[#00a489] transition-colors"
                         placeholder="you@company.com"
                       />
                     </div>
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Password
+                      </label>
                       <div className="relative">
                         <input
                           type={showPassword ? "text" : "password"}
-                          value={loginData.password}
-                          onChange={(e) => setLoginData({...loginData, password: e.target.value})}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a489] focus:border-transparent transition-all outline-none pr-12"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00a489] focus:border-[#00a489] transition-colors pr-12"
                           placeholder="••••••••"
                         />
                         <button
+                          type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
                         >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          {showPassword ? (
+                            <EyeOff className="w-5 h-5 text-gray-400" />
+                          ) : (
+                            <Eye className="w-5 h-5 text-gray-400" />
+                          )}
                         </button>
                       </div>
                     </div>
+
                     <div className="flex items-center justify-between">
-                      <label className="flex items-center space-x-2">
+                      <label className="flex items-center">
                         <input
                           type="checkbox"
-                          checked={loginData.rememberMe}
-                          onChange={(e) => setLoginData({...loginData, rememberMe: e.target.checked})}
-                          className="w-4 h-4 text-[#00a489] rounded focus:ring-[#00a489]"
+                          className="rounded border-gray-300 text-[#00a489] focus:ring-[#00a489]"
                         />
-                        <span className="text-sm text-gray-600">Remember me</span>
+                        <span className="ml-2 text-sm text-gray-600">Remember me</span>
                       </label>
-                      <a href="#" className="text-sm text-[#00a489] hover:text-[#008a73] font-medium">Forgot password?</a>
+                      <a href="#" className="text-sm text-[#00a489] hover:underline">
+                        Forgot password?
+                      </a>
                     </div>
+
                     <button
                       onClick={handleLogin}
-                      className="w-full bg-gradient-to-r from-[#00a489] to-[#4cb99f] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-[1.02]"
+                      className="w-full bg-[#00a489] text-white py-3 rounded-lg font-semibold hover:bg-[#008a73] transition-colors"
                     >
                       Sign In
                     </button>
@@ -405,37 +209,50 @@ export default function LandingPage() {
                       <div className="w-full border-t border-gray-200"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
+                      <span className="px-4 bg-white text-gray-500">Or continue with</span>
+                    </div>
+                  </div>
+                  
+                  {/* Google Auth Button */}
+                  <button
+                    onClick={async () => {
+                      await supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                          redirectTo: `${window.location.origin}/auth/callback`
+                        }
+                      })
+                    }}
+                    className="flex items-center justify-center space-x-3 w-full px-4 py-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span className="text-sm font-medium text-gray-700">
+                      Continue with Google
+                    </span>
+                  </button>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
                       <span className="px-4 bg-white text-gray-500">New to ATOM?</span>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => {
-                      // Demo sign up - in real app, this would open a sign-up modal
-                      const email = loginData.email || 'demo@atom.com';
-                      localStorage.setItem('auth-token', 'demo-token-' + Date.now());
-                      localStorage.setItem('atom-user', JSON.stringify({
-                        id: '1',
-                        email,
-                        name: email.split('@')[0]
-                      }));
-                      window.location.reload();
-                    }}
-                    className="w-full border-2 border-[#00a489] text-[#00a489] py-3 rounded-lg font-semibold hover:bg-gradient-to-r hover:from-[#00a489]/5 hover:to-[#4cb99f]/5 transition-all"
-                  >
+                  
+                  <button className="w-full border-2 border-[#00a489] text-[#00a489] py-3 rounded-lg font-semibold hover:bg-[#00a489]/5 transition-all">
                     Create Free Account
                   </button>
-
-                  {/* Security Features */}
-                  <div className="grid grid-cols-2 gap-4 pt-4">
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <Lock className="w-4 h-4 text-[#00a489]" />
-                      <span>256-bit SSL</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <Shield className="w-4 h-4 text-[#00a489]" />
-                      <span>2FA Enabled</span>
-                    </div>
+                  
+                  {/* Security Note */}
+                  <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                    <Lock className="w-4 h-4" />
+                    <span>256-bit SSL Encrypted</span>
                   </div>
                 </div>
               </div>
@@ -445,107 +262,44 @@ export default function LandingPage() {
       </section>
 
       {/* Live Statistics Bar */}
-      <section className="bg-gradient-to-r from-[#383838] to-[#2a2a2a] py-4 shadow-lg">
+      <section className="bg-[#383838] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-ping absolute"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                </div>
-                <span className="text-white text-sm font-medium">Live Trading</span>
-              </div>
-              <div className="text-white">
-                <span className="text-sm text-gray-400">Active Traders: </span>
-                <span className="font-bold text-lg">{stats.activeTraders.toLocaleString()}</span>
-              </div>
-              <div className="text-white">
-                <span className="text-sm text-gray-400">24h Profit: </span>
-                <span className="font-bold text-lg text-green-400">+${(stats.profitGenerated / 1000).toFixed(1)}K</span>
-              </div>
-              <div className="text-white hidden md:block">
-                <span className="text-sm text-gray-400">Total Volume: </span>
-                <span className="font-bold text-lg">${(stats.totalVolume / 1000000).toFixed(1)}M</span>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-sm">Live Trading</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Clock className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-gray-400">Next scan:</span>
-              <span className="text-white font-mono font-bold">00:12</span>
+              <span className="text-white font-mono">00:0{countdown}</span>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Indicators */}
-      <section className="py-12 bg-gray-50 border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: Shield, label: "Bank-Level Security", value: "256-bit SSL" },
-              { icon: Server, label: "Uptime Guarantee", value: "99.9%" },
-              { icon: Users, label: "Active Traders", value: "4,328+" },
-              { icon: Database, label: "Daily Volume", value: "$127M+" }
-            ].map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#00a489]/10 rounded-lg mb-3">
-                  <item.icon className="w-6 h-6 text-[#00a489]" />
-                </div>
-                <div className="text-sm text-gray-500">{item.label}</div>
-                <div className="text-lg font-bold text-[#383838]">{item.value}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white" id="platform">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
-            <div className="inline-flex items-center space-x-2 bg-[#00a489]/10 text-[#00a489] px-4 py-2 rounded-full text-sm font-semibold">
-              <Zap className="w-4 h-4" />
-              <span>Advanced Trading Technology</span>
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#383838]">
-              Why Traders Choose <span className="bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent">ATOM</span>
+            <h2 className="text-4xl font-bold text-[#383838]">
+              Why Traders Choose <span className="text-[#00a489]">ATOM</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our platform combines institutional-grade infrastructure with cutting-edge AI to deliver consistent arbitrage profits
             </p>
           </div>
-
+          
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="group relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00a489]/20 to-[#4cb99f]/20 rounded-2xl filter blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                <div className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-6 shadow-lg`}>
-                    <feature.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#383838] mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">{feature.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#00a489] font-bold text-lg">{feature.metric}</span>
-                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#00a489] transform group-hover:translate-x-1 transition-all" />
-                  </div>
+              <div key={index} className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#00a489] to-[#4cb99f] rounded-lg flex items-center justify-center mb-6">
+                  <feature.icon className="w-8 h-8 text-white" />
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Additional Features Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
-            {[
-              { icon: Globe, text: "50+ Exchanges" },
-              { icon: Clock, text: "24/7 Monitoring" },
-              { icon: CreditCard, text: "Low Fees" },
-              { icon: Award, text: "Regulated" }
-            ].map((item, index) => (
-              <div key={index} className="bg-gray-50 rounded-xl p-6 text-center hover:bg-[#00a489]/5 transition-colors">
-                <item.icon className="w-8 h-8 text-[#00a489] mx-auto mb-3" />
-                <span className="font-semibold text-[#383838]">{item.text}</span>
+                <h3 className="text-xl font-bold text-[#383838] mb-3">{feature.title}</h3>
+                <p className="text-gray-600 mb-4">{feature.description}</p>
+                <div className="text-[#00a489] font-semibold">{feature.metric}</div>
               </div>
             ))}
           </div>
@@ -553,312 +307,137 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white" id="about">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center space-x-2 bg-[#00a489]/10 text-[#00a489] px-4 py-2 rounded-full text-sm font-semibold">
-                <Users className="w-4 h-4" />
-                <span>Trusted by Thousands</span>
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-[#383838]">
-                Join <span className="bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent">4,000+</span> Profitable Traders
-              </h2>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                From individual traders to institutional investors, ATOM powers profitable arbitrage strategies at any scale. Our traders have collectively earned over $8.7M in profits.
-              </p>
 
-              {/* Profit Stats Grid */}
-              <div className="grid grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent mb-2">
-                    $8.7M+
-                  </div>
-                  <div className="text-gray-600">Total Profit Generated</div>
-                  <div className="text-sm text-gray-500 mt-2">Across all traders</div>
-                </div>
-                <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent mb-2">
-                    50+
-                  </div>
-                  <div className="text-gray-600">Integrated Exchanges</div>
-                  <div className="text-sm text-gray-500 mt-2">And growing</div>
-                </div>
-                <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent mb-2">
-                    12ms
-                  </div>
-                  <div className="text-gray-600">Avg Execution Time</div>
-                  <div className="text-sm text-gray-500 mt-2">Lightning fast</div>
-                </div>
-                <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-[#00a489] to-[#4cb99f] bg-clip-text text-transparent mb-2">
-                    99.9%
-                  </div>
-                  <div className="text-gray-600">Platform Uptime</div>
-                  <div className="text-sm text-gray-500 mt-2">Always available</div>
-                </div>
-              </div>
-            </div>
 
-            {/* Testimonials */}
-            <div className="relative">
-              <div className="bg-gradient-to-br from-[#00a489]/5 to-[#4cb99f]/5 rounded-3xl p-8">
-                <div className="space-y-6">
-                  {testimonials.map((testimonial, index) => (
-                    <div
-                      key={index}
-                      className={`bg-white rounded-2xl p-6 shadow-lg transition-all duration-500 ${
-                        index === currentTestimonial ? 'opacity-100 scale-100' : 'opacity-30 scale-95'
-                      }`}
-                    >
-                      <div className="flex items-start space-x-1 mb-4">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 fill-[#00a489] text-[#00a489]" />
-                        ))}
-                      </div>
-                      <p className="text-gray-700 mb-4 leading-relaxed italic">
-                        "{testimonial.text}"
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-[#00a489] to-[#4cb99f] rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">
-                              {testimonial.author.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="font-semibold text-[#383838]">{testimonial.author}</div>
-                            <div className="text-sm text-gray-500 flex items-center space-x-2">
-                              <span>{testimonial.role}</span>
-                              {testimonial.verified && (
-                                <>
-                                  <span>•</span>
-                                  <CheckCircle className="w-4 h-4 text-[#00a489]" />
-                                  <span className="text-[#00a489]">Verified</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">Total Profit</div>
-                          <div className="text-lg font-bold text-green-500">{testimonial.profit}</div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Testimonial Navigation */}
-                <div className="flex justify-center space-x-2 mt-6">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentTestimonial(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentTestimonial
-                          ? 'w-8 bg-[#00a489]'
-                          : 'bg-gray-300 hover:bg-gray-400'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Security Section */}
-      <section className="py-20 bg-[#383838]" id="security">
+      {/* Security Features */}
+      <section className="py-20 bg-[#383838]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
-            <div className="inline-flex items-center space-x-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-semibold">
-              <Shield className="w-4 h-4" />
-              <span>Enterprise Security</span>
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-white">
+            <h2 className="text-4xl font-bold text-white">
               Your Funds Are <span className="text-[#00a489]">Protected</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              We implement bank-level security measures to ensure your assets and data remain safe at all times
+              We implement enterprise-grade security measures to ensure your assets and data remain safe at all times
             </p>
           </div>
-
+          
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: Lock,
+                icon: Shield,
                 title: "Multi-Signature Wallets",
-                description: "All funds stored in secure multi-sig cold wallets requiring multiple approvals for any transaction",
-                features: ["Hardware wallet integration", "Time-locked transactions", "Whitelisted addresses"]
+                description: "All funds stored in multi-signature cold wallets with distributed key management"
               },
               {
-                icon: Shield,
+                icon: Lock,
                 title: "Advanced Encryption",
-                description: "Military-grade AES-256 encryption for all data transmission and storage across our platform",
-                features: ["End-to-end encryption", "Zero-knowledge architecture", "Regular security audits"]
+                description: "256-bit encryption for all data with end-to-end secure communication protocols"
               },
               {
                 icon: CheckCircle,
                 title: "Regulatory Compliance",
-                description: "Fully compliant with SEC, FINRA, and international financial regulations",
-                features: ["KYC/AML procedures", "Regular compliance audits", "Licensed and insured"]
+                description: "Fully compliant with SEC regulations and SOC 2 Type II certified"
               }
-            ].map((item, index) => (
-              <div key={index} className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all">
-                <div className="w-14 h-14 bg-[#00a489]/20 rounded-xl flex items-center justify-center mb-6">
-                  <item.icon className="w-8 h-8 text-[#00a489]" />
+            ].map((feature, index) => (
+              <div key={index} className="bg-gray-800 rounded-xl p-8 text-center">
+                <div className="w-14 h-14 bg-[#00a489] rounded-lg flex items-center justify-center mx-auto mb-6">
+                  <feature.icon className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-gray-300 mb-6">{item.description}</p>
-                <ul className="space-y-2">
-                  {item.features.map((feature, i) => (
-                    <li key={i} className="flex items-center space-x-2 text-gray-400">
-                      <CheckCircle className="w-4 h-4 text-[#00a489] flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          {/* Security Badges */}
-          <div className="flex flex-wrap justify-center gap-8 mt-16">
-            {trustBadges.map((badge, index) => (
-              <div key={index} className="flex items-center space-x-2 bg-white/5 px-6 py-3 rounded-lg">
-                <badge.icon className="w-5 h-5 text-[#00a489]" />
-                <span className="text-white font-medium">{badge.name}</span>
+                <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
+                <p className="text-gray-300">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-[#00a489] via-[#00a489] to-[#4cb99f] relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
-        </div>
-
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/20 text-white px-6 py-3 rounded-full text-sm font-semibold mb-8">
-            <Zap className="w-4 h-4" />
-            <span>Limited Time Offer • 30-Day Free Trial</span>
-          </div>
-
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-[#00a489] to-[#4cb99f]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">
             Start Earning Arbitrage Profits Today
           </h2>
-          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of traders who are already profiting from market inefficiencies.
-            Get instant access to our AI-powered platform with no credit card required.
+          <p className="text-xl text-white/90 mb-8">
+            Join thousands of traders who are already profiting from market inefficiencies. 
+            No credit card required for your 30-day trial.
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10">
-            <button className="bg-white text-[#00a489] px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
-              <span>Create Free Account</span>
-              <ChevronRight className="w-6 h-6" />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              onClick={onEnterApp}
+              className="bg-white text-[#00a489] px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105"
+            >
+              Create Free Account
             </button>
-            <button className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center space-x-2">
-              <span>Schedule Demo</span>
-              <Globe className="w-6 h-6" />
+            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-all">
+              Schedule Demo
             </button>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-6 text-white/80 text-sm">
-            <span className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5" />
-              <span>30-day free trial</span>
-            </span>
-            <span className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5" />
-              <span>No credit card required</span>
-            </span>
-            <span className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5" />
-              <span>Cancel anytime</span>
-            </span>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#2a2a2a] py-16">
+      <footer className="bg-[#383838] text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-5 gap-8 mb-12">
-            <div className="col-span-2 space-y-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 relative">
-                  <Image
-                    src="/atom-logo.jpg"
-                    alt="ATOM Arbitrage Trustless Logo"
-                    width={48}
-                    height={48}
-                    className="rounded-xl shadow-lg"
-                  />
+                <div className="w-8 h-8 bg-[#00a489] rounded-lg flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-bold text-2xl text-white">ATOM Arbitrage</span>
+                <span className="text-xl font-bold">ATOM</span>
               </div>
-              <p className="text-gray-400 leading-relaxed">
-                Institutional-grade arbitrage trading platform powered by advanced AI algorithms and real-time market analysis.
+              <p className="text-gray-400">
+                The future of institutional arbitrage trading. Powered by AI, secured by blockchain.
               </p>
-              <div className="flex space-x-4">
-                {['Twitter', 'LinkedIn', 'Discord', 'Telegram'].map((social) => (
-                  <a key={social} href="#" className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
-                    <span className="text-white text-xs font-medium">{social.charAt(0)}</span>
-                  </a>
-                ))}
-              </div>
             </div>
-
+            
             <div>
-              <h4 className="font-semibold text-white mb-4">Platform</h4>
-              <ul className="space-y-3 text-gray-400">
+              <h4 className="font-semibold mb-4">Platform</h4>
+              <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API Docs</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
               </ul>
             </div>
-
+            
             <div>
-              <h4 className="font-semibold text-white mb-4">Company</h4>
-              <ul className="space-y-3 text-gray-400">
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Press Kit</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
-
+            
             <div>
-              <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Compliance</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Risk Disclosure</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Compliance</a></li>
               </ul>
             </div>
           </div>
-
-          <div className="border-t border-gray-700 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              <div className="text-gray-400 text-sm">
-                © 2024 ATOM Arbitrage. All rights reserved. FINRA Member • SEC Registered
+          
+          <div className="border-t border-gray-700 mt-8 pt-8 flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-gray-400 text-sm">
+              © 2024 ATOM Arbitrage. All rights reserved.
+            </p>
+            <div className="flex space-x-6 mt-4 sm:mt-0">
+              <div className="flex items-center space-x-2 text-sm text-gray-400">
+                <Shield className="w-4 h-4" />
+                <span>SEC Compliant</span>
               </div>
-              <div className="flex flex-wrap gap-6">
-                {trustBadges.map((badge, index) => (
-                  <div key={index} className="flex items-center space-x-1 text-gray-500 text-sm">
-                    <badge.icon className="w-4 h-4" />
-                    <span>{badge.name}</span>
-                  </div>
-                ))}
+              <div className="flex items-center space-x-2 text-sm text-gray-400">
+                <Lock className="w-4 h-4" />
+                <span>FINRA Member</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-gray-400">
+                <Award className="w-4 h-4" />
+                <span>SOC 2 Type II</span>
               </div>
             </div>
           </div>

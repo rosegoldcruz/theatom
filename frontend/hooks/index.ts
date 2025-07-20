@@ -2,6 +2,7 @@
 export { useArbitrageBot } from './useArbitrageBot';
 export { useWeb3 } from './useWeb3';
 export { useRealTimeData } from './useRealTimeData';
+export { useAuth } from './useAuth';
 
 // Legacy API Hooks
 export { 

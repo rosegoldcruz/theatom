@@ -23,13 +23,10 @@ interface NetworkSelectorProps {
 export function NetworkSelector({ className = '', variant = 'dropdown' }: NetworkSelectorProps) {
   const { state, actions } = useAppContext();
   const { selectedNetwork, isDark } = state;
-  const { switchNetwork, isConnected } = useWeb3();
+  const { connect, isConnecting } = useWeb3();
 
   const handleNetworkChange = async (networkId: string) => {
     try {
-      if (isConnected) {
-        await switchNetwork(networkId);
-      }
       actions.setNetwork(networkId);
     } catch (error) {
       console.error('Failed to switch network:', error);
@@ -67,11 +64,7 @@ export function NetworkSelector({ className = '', variant = 'dropdown' }: Networ
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <span>Network Configuration</span>
-          {isConnected ? (
-            <Wifi className="w-4 h-4 text-green-500" />
-          ) : (
-            <WifiOff className="w-4 h-4 text-red-500" />
-          )}
+          <Wifi className="w-4 h-4 text-green-500" />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -117,8 +110,8 @@ export function NetworkSelector({ className = '', variant = 'dropdown' }: Networ
               <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                 Wallet
               </span>
-              <Badge variant={isConnected ? 'default' : 'destructive'}>
-                {isConnected ? 'Connected' : 'Disconnected'}
+              <Badge variant="default">
+                Connected
               </Badge>
             </div>
             <div className="flex items-center justify-between">

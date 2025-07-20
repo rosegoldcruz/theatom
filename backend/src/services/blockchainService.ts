@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
 
 // Environment configuration
-const BASE_SEPOLIA_RPC = import.meta.env.VITE_BASE_SEPOLIA_RPC_URL || 'https://base-sepolia.g.alchemy.com/v2/ESBtk3UKjPt2rK2Yz0hnzUj0tIJGTe-d';
-const CONTRACT_ADDRESS = import.meta.env.VITE_BASE_SEPOLIA_CONTRACT_ADDRESS || '0xFc905877348deA2f91000fe99F94E0AfAEDEB590';
-const PRIVATE_KEY = import.meta.env.VITE_PRIVATE_KEY;
+const BASE_SEPOLIA_RPC = process.env.BASE_SEPOLIA_RPC_URL || 'https://base-sepolia.g.alchemy.com/v2/ESBtk3UKjPt2rK2Yz0hnzUj0tIJGTe-d';
+const CONTRACT_ADDRESS = process.env.BASE_SEPOLIA_CONTRACT_ADDRESS || '0xFc905877348deA2f91000fe99F94E0AfAEDEB590';
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 // Contract ABI (simplified for arbitrage operations)
 const ARBITRAGE_ABI = [
@@ -49,7 +49,7 @@ class BlockchainService {
     
     if (PRIVATE_KEY) {
       this.wallet = new ethers.Wallet(PRIVATE_KEY, this.provider);
-      this.contract = this.contract.connect(this.wallet);
+      this.contract = this.contract.connect(this.wallet) as ethers.Contract;
     }
   }
 
@@ -83,11 +83,11 @@ class BlockchainService {
         isPaused,
         networkInfo
       ] = await Promise.all([
-        this.contract.getTotalProfit().catch(() => 0),
-        this.contract.getActiveOpportunities().catch(() => 0),
-        this.contract.getSuccessRate().catch(() => 0),
+        this.contract['getTotalProfit']().catch(() => 0),
+        this.contract['getActiveOpportunities']().catch(() => 0),
+        this.contract['getSuccessRate']().catch(() => 0),
         this.provider.getBalance(CONTRACT_ADDRESS),
-        this.contract.paused().catch(() => false),
+        this.contract['paused']().catch(() => false),
         this.getNetworkInfo()
       ]);
 
@@ -118,17 +118,32 @@ class BlockchainService {
 
   async getRecentTrades(limit: number = 10): Promise<RealTradeData[]> {
     try {
-      const filter = this.contract.filters.ArbitrageExecuted();
+      if (!this.contract || !this.contract.filters) {
+        return [];
+      }
+      const arbitrageExecutedFilter = this.contract.filters['ArbitrageExecuted'];
+      if (!arbitrageExecutedFilter) {
+        return [];
+      }
+      const filter = arbitrageExecutedFilter();
       const events = await this.contract.queryFilter(filter, -1000); // Last 1000 blocks
-      
+
       const trades = await Promise.all(
         events.slice(-limit).map(async (event) => {
           const block = await event.getBlock();
+          let tokenPair = 'UNKNOWN/ETH';
+          let profit = 0;
+
+          if ('args' in event && event.args) {
+            tokenPair = `${event.args[0] || 'UNKNOWN'}/ETH`;
+            profit = parseFloat(ethers.formatEther(event.args[1] || 0));
+          }
+
           return {
             txHash: event.transactionHash,
             timestamp: block.timestamp * 1000,
-            tokenPair: `${event.args?.[0] || 'UNKNOWN'}/ETH`,
-            profit: parseFloat(ethers.formatEther(event.args?.[1] || 0)),
+            tokenPair,
+            profit,
             gasUsed: 0, // Will be filled from transaction receipt
             status: 'success' as const,
             blockNumber: event.blockNumber

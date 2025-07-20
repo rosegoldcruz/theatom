@@ -1,37 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+export const supabase = createClient(
+  'https://nmjvebcauoyqzjlnluos.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tanZlYmNhdW95cXpqbG5sdW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNDUwMDksImV4cCI6MjA2NzkyMTAwOX0.zCo7UC0Vb0wIUT0mAPk6qknKe0iQbY7dgGVXwUmqXGI'
+)
 
-// Frontend Supabase client - only for authentication and public data
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-})
-
-// Helper function to get current user session
-export const getCurrentUser = async () => {
-  try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
-    const { data: { user }, error } = await supabase.auth.getUser()
-    if (error) {
-      console.error('Error getting current user:', error)
-      return null
-    }
-    return user
-  } catch (error) {
-    console.error('Error in getCurrentUser:', error)
-    return null
-  }
-}
-
-// Helper function to get auth token for API calls
+// Add missing export that other files expect
 export const getAuthToken = async () => {
   try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
     const { data: { session }, error } = await supabase.auth.getSession()
     if (error) {
       console.error('Error getting session:', error)
