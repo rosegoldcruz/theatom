@@ -2,12 +2,12 @@
   "name": "atom-arbitrage-orchestrator",
   "version": "1.0.0",
   "description": "ATOM Arbitrage System - Orchestrator Bot",
-  "main": "dist/launcher.js",
+  "main": "simple-launcher.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/launcher.js",
-    "dev": "ts-node launcher.ts",
-    "watch": "nodemon --exec ts-node launcher.ts",
+    "build": "echo 'No build needed for simple launcher'",
+    "start": "node simple-launcher.js",
+    "dev": "node simple-launcher.js",
+    "watch": "nodemon simple-launcher.js",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "clean": "rm -rf dist"
@@ -28,7 +28,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethers": "^6.8.0",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "node-telegram-bot-api": "^0.64.0",
     "nodemailer": "^6.9.7"
   },

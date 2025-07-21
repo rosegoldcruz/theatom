@@ -277,7 +277,8 @@ export class AtomOrchestrator {
     return pairs;
   }
 
-  private getTokenSymbol(address: string): string {
+  private getTokenSymbol(address: string | undefined): string {
+    if (!address) return 'UNKNOWN';
     const tokenEntries = Object.entries(this.TOKENS);
     const found = tokenEntries.find(([, addr]) => addr.toLowerCase() === address.toLowerCase());
     return found ? found[0] : address.slice(0, 8);
@@ -343,6 +344,11 @@ export class AtomOrchestrator {
       const sortedByPrice = prices.sort((a, b) => a.price - b.price);
       const buyDEX = sortedByPrice[0]; // Lowest price (buy here)
       const sellDEX = sortedByPrice[sortedByPrice.length - 1]; // Highest price (sell here)
+
+      // Check if DEXes exist
+      if (!buyDEX || !sellDEX) {
+        return null;
+      }
 
       // Calculate potential profit
       const amountIn = Math.min(config.max_trade_amount_eth, 1.0); // Start with 1 ETH or max allowed
@@ -563,19 +569,19 @@ export class AtomOrchestrator {
         .from('arbitrage_opportunities')
         .update({
           status: 'failed',
-          error_message: error.message,
+          error_message: error instanceof Error ? error.message : String(error),
           completed_at: new Date()
         })
         .eq('id', opportunity.id);
 
       await this.logSystemEvent('error', 'orchestrator', 'Arbitrage execution failed', {
         opportunityId: opportunity.id,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   }
 
-  private async sendNotifications(type: string, title: string, message: string, data?: any): Promise<void> {
+  private async sendNotifications(_type: string, title: string, message: string, data?: any): Promise<void> {
     // Send Telegram notification
     if (this.telegramBot && process.env.TELEGRAM_CHAT_ID) {
       try {
