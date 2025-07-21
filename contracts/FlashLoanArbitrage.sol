@@ -6,7 +6,7 @@ import "@aave/core-v3/contracts/interfaces/IPoolAddressesProvider.sol";
 import "@aave/core-v3/contracts/interfaces/IPool.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title FlashLoanArbitrage
@@ -61,8 +61,9 @@ contract FlashLoanArbitrage is FlashLoanSimpleReceiverBase, Ownable, ReentrancyG
         _;
     }
 
-    constructor(address _addressProvider) 
-        FlashLoanSimpleReceiverBase(IPoolAddressesProvider(_addressProvider)) 
+    constructor(address _addressProvider)
+        FlashLoanSimpleReceiverBase(IPoolAddressesProvider(_addressProvider))
+        Ownable(msg.sender)
     {
         // Initialize DEX routers (Base Sepolia addresses)
         dexRouters["uniswap"] = DEXInfo({
@@ -126,7 +127,7 @@ contract FlashLoanArbitrage is FlashLoanSimpleReceiverBase, Ownable, ReentrancyG
             string memory buyDex,
             string memory sellDex,
             uint256 minProfit,
-            uint256 flashLoanAmount
+            // uint256 flashLoanAmount - unused in this implementation
         ) = abi.decode(params, (address, address, string, string, uint256, uint256));
 
         uint256 startBalance = IERC20(asset).balanceOf(address(this));
@@ -204,14 +205,13 @@ contract FlashLoanArbitrage is FlashLoanSimpleReceiverBase, Ownable, ReentrancyG
     /**
      * @dev Execute swap on specified DEX
      * @param tokenIn Input token
-     * @param tokenOut Output token
      * @param amountIn Input amount
      * @param dexName DEX identifier
      * @return amountOut Output amount received
      */
     function _swapOnDEX(
         address tokenIn,
-        address tokenOut,
+        address /* tokenOut */,
         uint256 amountIn,
         string memory dexName
     ) internal returns (uint256 amountOut) {

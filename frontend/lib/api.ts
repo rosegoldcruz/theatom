@@ -1,5 +1,5 @@
 // Backend API client for ATOM v2
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
 export interface BotStatus {
   status: 'running' | 'stopped' | 'error'

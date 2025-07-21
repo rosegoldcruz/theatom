@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { useAppContext } from '@/contexts/AppContext';
-import { 
-  DollarSign, TrendingUp, Activity, Zap, Play, Pause, 
-  CheckCircle, Clock, Shield 
+import {
+  DollarSign, TrendingUp, Activity, Zap, Play, Pause,
+  CheckCircle, Clock, Shield
 } from 'lucide-react';
+import FlashLoanTrigger from '@/components/FlashLoanTrigger';
 
 export function DashboardPage() {
   const { state, actions } = useAppContext();
@@ -147,6 +148,11 @@ export function DashboardPage() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Flash Loan Section */}
+      <div className="mt-6">
+        <FlashLoanTrigger />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
+require("@nomicfoundation/hardhat-verify");
+require("dotenv").config({ path: '.env.local' });
 
 module.exports = {
   solidity: {
@@ -37,7 +38,7 @@ module.exports = {
       accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : []
     },
     base_sepolia: {
-      url: process.env.BASE_SEPOLIA_RPC_URL || `https://base-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`,
+      url: `https://base-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 84532
     },
@@ -52,7 +53,25 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
+    apiKey: process.env.ETHERSCAN_API_KEY,
+    customChains: [
+      {
+        network: "base-sepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://api-sepolia.basescan.org/api",
+          browserURL: "https://base-sepolia.basescan.org",
+        },
+      },
+      {
+        network: "base-mainnet",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org",
+        },
+      },
+    ],
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
