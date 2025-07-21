@@ -16,8 +16,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application
-RUN npm run build
+# No build needed for simple launcher
+RUN echo "Using simple launcher - no build required"
 
 # Production image, copy all the files and run the app
 FROM base AS runner
@@ -28,8 +28,8 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 orchestrator
 
-# Copy built application
-COPY --from=builder /app/dist ./dist
+# Copy application files
+COPY --from=builder /app/simple-launcher.js ./simple-launcher.js
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
@@ -44,4 +44,4 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-CMD ["node", "dist/launcher.js"]
+CMD ["node", "simple-launcher.js"]
