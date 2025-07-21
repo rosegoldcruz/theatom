@@ -3,7 +3,7 @@
 import React from 'react';
 import { ChevronDown, Wifi, WifiOff } from 'lucide-react';
 import { useAppContext } from '@/contexts/AppContext';
-import { useWeb3 } from '@/hooks/useWeb3';
+import { useAccount } from 'wagmi';
 import { NETWORKS } from '@/constants/networks';
 import { 
   Select, 
@@ -23,7 +23,7 @@ interface NetworkSelectorProps {
 export function NetworkSelector({ className = '', variant = 'dropdown' }: NetworkSelectorProps) {
   const { state, actions } = useAppContext();
   const { selectedNetwork, isDark } = state;
-  const { connect, isConnecting } = useWeb3();
+  const { isConnecting } = useAccount();
 
   const handleNetworkChange = async (networkId: string) => {
     try {
