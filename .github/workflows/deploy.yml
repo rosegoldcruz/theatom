@@ -9,6 +9,15 @@ on:
 env:
   NODE_VERSION: '18'
 
+# Required secrets:
+# VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# RAILWAY_TOKEN
+# PRIVATE_KEY, BASE_SEPOLIA_RPC_URL, ETHERSCAN_API_KEY
+# BASE_SEPOLIA_CONTRACT_ADDRESS, VITE_BASE_SEPOLIA_RPC_URL, VITE_BASE_SEPOLIA_CONTRACT_ADDRESS
+# SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+# TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+# SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, NOTIFICATION_EMAIL
+
 jobs:
   test:
     name: Test & Lint
@@ -112,7 +121,7 @@ jobs:
           VITE_BASE_SEPOLIA_CONTRACT_ADDRESS: ${{ secrets.VITE_BASE_SEPOLIA_CONTRACT_ADDRESS }}
           
       - name: Deploy to Vercel
-        uses: vercel/action@v1
+        uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -185,11 +194,13 @@ jobs:
           npm run build
           
       - name: Deploy to Railway
-        uses: railway-app/railway@v1
-        with:
-          token: ${{ secrets.RAILWAY_TOKEN }}
-          service: atom-orchestrator
+        run: |
+          npm install -g @railway/cli
+          railway login --token ${{ secrets.RAILWAY_TOKEN }}
+          cd orchestrator
+          railway up --service atom-orchestrator
         env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           BASE_SEPOLIA_CONTRACT_ADDRESS: ${{ secrets.BASE_SEPOLIA_CONTRACT_ADDRESS }}

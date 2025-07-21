@@ -1,61 +1,37 @@
-import { createConfig, configureChains } from 'wagmi'
+import { createConfig, http } from 'wagmi'
 import { baseSepolia } from 'wagmi/chains'
-import { alchemyProvider } from 'wagmi/providers/alchemy'
-import { publicProvider } from 'wagmi/providers/public'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
-import { InjectedConnector } from 'wagmi/connectors/injected'
+import { metaMask, walletConnect, coinbaseWallet, injected } from 'wagmi/connectors'
 
-// Configure chains & providers for Base Sepolia testnet
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [baseSepolia],
-  [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || '' }),
-    publicProvider(),
-  ]
-)
-
-// Set up wagmi config
+// Set up wagmi config with new API
 export const config = createConfig({
-  autoConnect: true,
+  chains: [baseSepolia],
   connectors: [
-    new MetaMaskConnector({
-      chains,
-      options: {
-        shimDisconnect: true,
+    metaMask({
+      dappMetadata: {
+        name: 'ATOM Arbitrage Platform',
+        url: 'https://AeonInvestmentsTechnologies.com',
       },
     }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-        showQrModal: true,
-        metadata: {
-          name: 'ATOM Arbitrage Platform',
-          description: 'Professional DeFi Arbitrage Trading with Flash Loans',
-          url: 'https://AeonInvestmentsTechnologies.com',
-          icons: ['https://AeonInvestmentsTechnologies.com/atom-logo.jpg'],
-        },
+    walletConnect({
+      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
+      metadata: {
+        name: 'ATOM Arbitrage Platform',
+        description: 'Professional DeFi Arbitrage Trading with Flash Loans',
+        url: 'https://AeonInvestmentsTechnologies.com',
+        icons: ['https://AeonInvestmentsTechnologies.com/atom-logo.jpg'],
       },
     }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: 'ATOM Arbitrage',
-        darkMode: true,
-      },
+    coinbaseWallet({
+      appName: 'ATOM Arbitrage',
+      darkMode: true,
     }),
-    new InjectedConnector({
-      chains,
-      options: {
-        name: 'Browser Wallet',
-        shimDisconnect: true,
-      },
+    injected({
+      shimDisconnect: true,
     }),
   ],
-  publicClient,
-  webSocketPublicClient,
+  transports: {
+    [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org'),
+  },
 })
 
 export { chains }

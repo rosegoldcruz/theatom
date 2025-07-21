@@ -20,12 +20,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          <WalletProvider>
-            <AppProvider>
+          <AppProvider>
+            <WalletProvider>
               {children}
               <Toaster />
-            </AppProvider>
-          </WalletProvider>
+            </WalletProvider>
+          </AppProvider>
         </ThemeProvider>
       </WagmiConfig>
     </QueryClientProvider>

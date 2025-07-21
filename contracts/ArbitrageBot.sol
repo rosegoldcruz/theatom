@@ -326,7 +326,7 @@ contract AtomArbitrage is FlashLoanSimpleReceiverBase, ReentrancyGuard, Ownable,
      * @dev Swap on Uniswap V2
      */
     function _swapUniswapV2(
-        address tokenIn,
+        address /* tokenIn */,
         address /* tokenOut */,
         uint256 amountIn,
         bytes memory swapData
@@ -431,7 +431,7 @@ contract AtomArbitrage is FlashLoanSimpleReceiverBase, ReentrancyGuard, Ownable,
             tokenIn,
             tokenOut,
             amountIn,
-            tx.origin
+            msg.sender
         ));
 
         tradeHistory.push(Trade({
