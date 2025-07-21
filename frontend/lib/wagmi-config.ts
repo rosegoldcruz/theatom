@@ -1,6 +1,7 @@
-import { createConfig, http } from 'wagmi'
+import { createConfig } from 'wagmi'
+import { http } from 'viem'
 import { baseSepolia } from 'wagmi/chains'
-import { metaMask, walletConnect, coinbaseWallet, injected } from 'wagmi/connectors'
+import { metaMask, walletConnect, coinbaseWallet } from '@wagmi/connectors'
 
 // Set up wagmi config with new API
 export const config = createConfig({
@@ -25,13 +26,10 @@ export const config = createConfig({
       appName: 'ATOM Arbitrage',
       darkMode: true,
     }),
-    injected({
-      shimDisconnect: true,
-    }),
   ],
   transports: {
     [baseSepolia.id]: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL || 'https://sepolia.base.org'),
   },
 })
 
-export { chains }
+export const chains = [baseSepolia]

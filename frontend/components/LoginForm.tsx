@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Loader2, Github, Mail } from 'lucide-react';
 
 export const LoginForm: React.FC = () => {
-  const { signIn, signUp, isLoading } = useAuth();
+  const { signInWithGoogle, loading } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,11 +23,7 @@ export const LoginForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      if (isSignUp) {
-        await signUp(email, password, name || email.split('@')[0]);
-      } else {
-        await signIn(email, password);
-      }
+      await signInWithGoogle();
     } catch (err: any) {
       setError(err.message || 'Authentication failed');
     } finally {
@@ -55,7 +51,7 @@ export const LoginForm: React.FC = () => {
     }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />

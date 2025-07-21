@@ -19,4 +19,3 @@ export { SettingsPage } from './pages/SettingsPage';
 // Legacy Components (if needed)
 export { LandingPage } from './LandingPage';
 export { LoginForm } from './LoginForm';
-export { AuthProvider, useAuth } from './AuthContext';

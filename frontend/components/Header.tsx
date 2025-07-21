@@ -2,16 +2,22 @@
 
 import React from 'react';
 import { useAppContext } from '@/contexts/AppContext';
-import { useWeb3 } from '@/hooks/useWeb3';
-import { 
-  Menu, ChevronDown, Wallet, Copy, Sun, Moon, 
-  Network, CheckCircle 
+import { useConnect } from 'wagmi';
+import {
+  Menu, ChevronDown, Wallet, Copy, Sun, Moon,
+  Network, CheckCircle
 } from 'lucide-react';
 
 export function Header() {
   const { state, actions } = useAppContext();
   const { currentPage, isDark, isMobile, selectedNetwork, isWalletConnected, walletAddress, botStatus } = state;
-  const { connect } = useWeb3();
+  const { connect, connectors } = useConnect();
+
+  const handleConnect = () => {
+    if (connectors[0]) {
+      connect({ connector: connectors[0] });
+    }
+  };
 
   const networks = {
     ethereum: { name: 'Ethereum', color: 'bg-blue-500', gasPrice: '23 gwei' },
@@ -92,7 +98,7 @@ export function Header() {
             </div>
           ) : (
             <button 
-              onClick={connect}
+              onClick={handleConnect}
               className={`${themes[state.theme]} text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity font-medium`}
             >
               Connect Wallet
