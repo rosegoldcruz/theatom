@@ -144,7 +144,9 @@ class APIClient {
     onOpportunity?: (opportunity: ArbitrageOpportunity) => void
     onTrade?: (trade: Trade) => void
   }) {
-    const ws = new WebSocket(`${API_BASE_URL.replace('http', 'ws')}/ws`)
+    // Convert HTTPS to WSS properly
+    const wsUrl = API_BASE_URL.replace('https://', 'wss://').replace('http://', 'ws://')
+    const ws = new WebSocket(`${wsUrl}/ws`)
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
@@ -173,30 +175,30 @@ class APIClient {
 export const api = new APIClient()
 
 export const arbitrageApi = {
-  getOpportunities: () => fetch('/api/opportunities').then(res => res.json()),
-  executeArbitrage: (data: any) => fetch('/api/execute', {
+  getOpportunities: () => fetch(`${API_BASE_URL}/opportunities`).then(res => res.json()),
+  executeArbitrage: (data: any) => fetch(`${API_BASE_URL}/execute`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   }).then(res => res.json()),
-  simulate: (data: any) => fetch('/api/arbitrage/simulate', {
+  simulate: (data: any) => fetch(`${API_BASE_URL}/arbitrage/simulate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   }).then(res => res.json()),
-  getStatus: () => fetch('/api/status').then(res => res.json()),
+  getStatus: () => fetch(`${API_BASE_URL}/status`).then(res => res.json()),
 };
 
 export const opportunitiesApi = {
-  getAll: () => fetch('/api/opportunities'),
-  getById: (id: string) => fetch(`/api/opportunities/${id}`)
+  getAll: () => fetch(`${API_BASE_URL}/opportunities`),
+  getById: (id: string) => fetch(`${API_BASE_URL}/opportunities/${id}`)
 };
 
 export const botApi = {
-  getStatus: () => fetch('/api/bot/status'),
-  start: () => fetch('/api/bot/start', { method: 'POST' }),
-  stop: () => fetch('/api/bot/stop', { method: 'POST' }),
-  updateConfig: (config: any) => fetch('/api/bot/config', {
+  getStatus: () => fetch(`${API_BASE_URL}/bot/status`),
+  start: () => fetch(`${API_BASE_URL}/bot/start`, { method: 'POST' }),
+  stop: () => fetch(`${API_BASE_URL}/bot/stop`, { method: 'POST' }),
+  updateConfig: (config: any) => fetch(`${API_BASE_URL}/bot/config`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(config)
