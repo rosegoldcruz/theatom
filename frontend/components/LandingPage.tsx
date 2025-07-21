@@ -78,13 +78,18 @@ export function LandingPage() {
       <section className="relative bg-gradient-to-br from-gray-50 to-white py-20 overflow-hidden">
         {/* Decorative Atom Symbols */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 opacity-10">
-            <svg width="80" height="80" viewBox="0 0 100 100" className="text-[#00a489]">
-              <circle cx="50" cy="50" r="8" fill="currentColor"/>
-              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
-              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
-              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
-            </svg>
+          <div className="absolute top-20 left-10 opacity-30">
+            <div className="w-20 h-20">
+              <iframe
+                src="https://giphy.com/embed/9oHZQ2gEez8ti"
+                width="80"
+                height="80"
+                className="giphy-embed"
+                frameBorder="0"
+                allowFullScreen
+                title="ATOM Animation"
+              />
+            </div>
           </div>
           <div className="absolute top-40 right-20 opacity-5">
             <svg width="120" height="120" viewBox="0 0 100 100" className="text-[#00a489]">

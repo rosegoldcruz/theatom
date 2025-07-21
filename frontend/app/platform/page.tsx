@@ -18,12 +18,24 @@ export default function PlatformPage() {
       </ol>
       <div className="mt-10 flex flex-col sm:flex-row gap-4">
         <div className="bg-gray-100 rounded-xl p-6 flex-1">
-          <div className="text-xl font-semibold mb-2">1-Minute Explainer (Video Placeholder)</div>
+          <div className="text-xl font-semibold mb-2">1-Minute Explainer</div>
           <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center text-gray-500 text-3xl">🎥</div>
         </div>
         <div className="bg-gray-100 rounded-xl p-6 flex-1">
-          <div className="text-xl font-semibold mb-2">Product Screenshots</div>
-          <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center text-gray-400">📸</div>
+          <div className="text-xl font-semibold mb-2">DeFi Arbitrage in Action</div>
+          <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center overflow-hidden">
+            <div className="w-full h-0 pb-[117%] relative">
+              <iframe
+                src="https://giphy.com/embed/b0Mx95sw4afk0fh3ve"
+                width="100%"
+                height="100%"
+                className="absolute inset-0 giphy-embed"
+                frameBorder="0"
+                allowFullScreen
+                title="DeFi Arbitrage Animation"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </main>
