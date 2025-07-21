@@ -9,11 +9,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { Navbar } from './Navbar';
 
-interface LandingPageProps {
-  onEnterApp: () => void;
-}
-
-export function LandingPage({ onEnterApp }: LandingPageProps) {
+export function LandingPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,23 +61,56 @@ export function LandingPage({ onEnterApp }: LandingPageProps) {
 
 
 
-  const handleLogin = () => {
-    onEnterApp();
+  const handleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
   };
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar
-        onSignIn={async () => {
-          await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback` } });
-        }}
-        onStartTrading={async () => {
-          await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback` } });
-        }}
-      />
+      <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-gray-50 to-white py-20">
+      <section className="relative bg-gradient-to-br from-gray-50 to-white py-20 overflow-hidden">
+        {/* Decorative Atom Symbols */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 left-10 opacity-10">
+            <svg width="80" height="80" viewBox="0 0 100 100" className="text-[#00a489]">
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
+            </svg>
+          </div>
+          <div className="absolute top-40 right-20 opacity-5">
+            <svg width="120" height="120" viewBox="0 0 100 100" className="text-[#00a489]">
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
+            </svg>
+          </div>
+          <div className="absolute bottom-20 left-1/4 opacity-8">
+            <svg width="60" height="60" viewBox="0 0 100 100" className="text-[#00a489]">
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
+            </svg>
+          </div>
+          <div className="absolute top-32 right-1/3 opacity-6">
+            <svg width="100" height="100" viewBox="0 0 100 100" className="text-[#00a489]">
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
+            </svg>
+          </div>
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Messaging */}
@@ -104,15 +133,8 @@ export function LandingPage({ onEnterApp }: LandingPageProps) {
 
 
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={onEnterApp}
-                  className="bg-[#00a489] text-white px-8 py-4 rounded-lg font-semibold hover:bg-[#008a73] transition-all transform hover:scale-105 flex items-center justify-center space-x-2"
-                >
-                  <span>Start Trading Now</span>
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+              {/* Demo Button */}
+              <div className="flex justify-center">
                 <button className="border-2 border-[#00a489] text-[#00a489] px-8 py-4 rounded-lg font-semibold hover:bg-[#00a489]/5 transition-all flex items-center justify-center space-x-2">
                   <span>View Live Demo</span>
                   <Activity className="w-5 h-5" />
@@ -236,18 +258,7 @@ export function LandingPage({ onEnterApp }: LandingPageProps) {
                     </span>
                   </button>
                   
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-4 bg-white text-gray-500">New to ATOM?</span>
-                    </div>
-                  </div>
-                  
-                  <button className="w-full border-2 border-[#00a489] text-[#00a489] py-3 rounded-lg font-semibold hover:bg-[#00a489]/5 transition-all">
-                    Create Free Account
-                  </button>
+
                   
                   {/* Security Note */}
                   <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
@@ -280,8 +291,27 @@ export function LandingPage({ onEnterApp }: LandingPageProps) {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 bg-gray-50 overflow-hidden">
+        {/* More Decorative Atoms */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-10 right-10 opacity-5">
+            <svg width="90" height="90" viewBox="0 0 100 100" className="text-[#00a489]">
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
+            </svg>
+          </div>
+          <div className="absolute bottom-10 left-16 opacity-7">
+            <svg width="70" height="70" viewBox="0 0 100 100" className="text-[#00a489]">
+              <circle cx="50" cy="50" r="8" fill="currentColor"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(60 50 50)"/>
+              <ellipse cx="50" cy="50" rx="35" ry="15" fill="none" stroke="currentColor" strokeWidth="2" transform="rotate(120 50 50)"/>
+            </svg>
+          </div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-4 mb-16">
             <h2 className="text-4xl font-bold text-[#383838]">
               Why Traders Choose <span className="text-[#00a489]">ATOM</span>
@@ -351,29 +381,7 @@ export function LandingPage({ onEnterApp }: LandingPageProps) {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-[#00a489] to-[#4cb99f]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Start Earning Arbitrage Profits Today
-          </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Join thousands of traders who are already profiting from market inefficiencies. 
-            No credit card required for your 30-day trial.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={onEnterApp}
-              className="bg-white text-[#00a489] px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105"
-            >
-              Create Free Account
-            </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-all">
-              Schedule Demo
-            </button>
-          </div>
-        </div>
-      </section>
+
 
       {/* Footer */}
       <footer className="bg-[#383838] text-white py-12">

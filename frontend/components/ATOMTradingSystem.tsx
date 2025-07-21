@@ -28,7 +28,7 @@ export function ATOMTradingSystem() {
 
   // Show landing page first
   if (!showDashboard) {
-    return <LandingPage onEnterApp={() => setShowDashboard(true)} />;
+    return <LandingPage />;
   }
 
   // Show dashboard app

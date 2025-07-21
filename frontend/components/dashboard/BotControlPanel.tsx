@@ -193,13 +193,8 @@ export default function BotControlPanel() {
               <span className="font-medium">Process ID:</span> {botStatus?.pid || 'N/A'}
             </div>
             <div>
-              <span className="font-medium">Uptime:</span> {
-                botStatus?.stats.uptime ? formatUptime(botStatus.stats.uptime) : 'N/A'
-              }
-            </div>
-            <div>
               <span className="font-medium">Last Heartbeat:</span> {
-                formatLastHeartbeat(botStatus?.lastHeartbeat)
+                formatLastHeartbeat(botStatus?.lastHeartbeat || null)
               }
             </div>
             <div>
@@ -260,3 +255,18 @@ export default function BotControlPanel() {
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

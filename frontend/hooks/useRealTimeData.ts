@@ -27,7 +27,7 @@ export const useRealTimeData = (): UseRealTimeDataReturn => {
   useEffect(() => {
     if (apiOpportunities && apiOpportunities.length > 0) {
       const formattedOpportunities: ArbitrageOpportunity[] = apiOpportunities.map((opp, index) => ({
-        id: opp.id || index + 1,
+        id: typeof opp.id === 'string' ? parseInt(opp.id, 10) || index + 1 : opp.id || index + 1,
         pair: opp.pair || `TOKEN${index + 1}/USDC`,
         dex1: opp.dex1 || 'Uniswap V3',
         dex2: opp.dex2 || 'Curve',

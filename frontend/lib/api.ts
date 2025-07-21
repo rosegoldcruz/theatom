@@ -172,4 +172,46 @@ class APIClient {
 
 export const api = new APIClient()
 
+export const arbitrageApi = {
+  getOpportunities: () => fetch('/api/opportunities').then(res => res.json()),
+  executeArbitrage: (data: any) => fetch('/api/execute', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(res => res.json()),
+  simulate: (data: any) => fetch('/api/arbitrage/simulate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(res => res.json()),
+  getStatus: () => fetch('/api/status').then(res => res.json()),
+};
+
+export const opportunitiesApi = {
+  getAll: () => fetch('/api/opportunities'),
+  getById: (id: string) => fetch(`/api/opportunities/${id}`)
+};
+
+export const botApi = {
+  getStatus: () => fetch('/api/bot/status'),
+  start: () => fetch('/api/bot/start', { method: 'POST' }),
+  stop: () => fetch('/api/bot/stop', { method: 'POST' }),
+  updateConfig: (config: any) => fetch('/api/bot/config', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(config)
+  })
+};
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -348,7 +348,7 @@ export default function DashboardPage() {
               <CardContent>
                 {analytics?.profitByToken && (
                   <div className="space-y-2">
-                    {analytics.profitByToken.slice(0, 5).map((item, index) => (
+                    {analytics?.profitByToken?.slice(0, 5).map((item: any, index: number) => (
                       <div key={index} className="flex justify-between">
                         <span className="text-sm">{item.token}</span>
                         <span className="text-sm font-medium">
@@ -366,3 +366,8 @@ export default function DashboardPage() {
     </div>
   )
 }
+
+
+
+
+

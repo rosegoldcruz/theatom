@@ -8,7 +8,6 @@ import { AppProvider } from '@/contexts/AppContext';
 
 export default function Home() {
   const { user, loading } = useAuth();
-  const [showApp, setShowApp] = useState(false);
 
   if (loading) {
     return (
@@ -18,8 +17,8 @@ export default function Home() {
     );
   }
 
-  // If user is authenticated or manually entering app, show the trading system
-  if (user || showApp) {
+  // Only show trading system if user is properly authenticated
+  if (user) {
     return (
       <AppProvider>
         <ATOMTradingSystem />
@@ -27,8 +26,8 @@ export default function Home() {
     );
   }
 
-  // Show landing page with authentication
+  // Show landing page - no bypass allowed
   return (
-    <LandingPage onEnterApp={() => setShowApp(true)} />
+    <LandingPage />
   );
 }

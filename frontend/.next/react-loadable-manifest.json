@@ -1,0 +1,61 @@
+{
+  "node_modules\\.pnpm\\@supabase+auth-js@2.71.0\\node_modules\\@supabase\\auth-js\\dist\\module\\lib\\helpers.js -> @supabase/node-fetch": {
+    "id": 84628,
+    "files": []
+  },
+  "node_modules\\.pnpm\\@supabase+functions-js@2.4.5\\node_modules\\@supabase\\functions-js\\dist\\module\\helper.js -> @supabase/node-fetch": {
+    "id": 84628,
+    "files": []
+  },
+  "node_modules\\.pnpm\\@supabase+realtime-js@2.11.15\\node_modules\\@supabase\\realtime-js\\dist\\module\\RealtimeClient.js -> @supabase/node-fetch": {
+    "id": 84628,
+    "files": []
+  },
+  "node_modules\\.pnpm\\@supabase+storage-js@2.7.1\\node_modules\\@supabase\\storage-js\\dist\\module\\lib\\helpers.js -> @supabase/node-fetch": {
+    "id": 84628,
+    "files": []
+  },
+  "node_modules\\.pnpm\\@wagmi+connectors@3.1.11_@t_fd97fa2244229b57b417e7957031e8b8\\node_modules\\@wagmi\\connectors\\dist\\coinbaseWallet.js -> @coinbase/wallet-sdk": {
+    "id": 46810,
+    "files": [
+      "static/chunks/916-6b0de2dd31607c3a.js",
+      "static/chunks/810.70d00df5cb8f1277.js",
+      "static/chunks/606.aab015fd4d5c48f6.js"
+    ]
+  },
+  "node_modules\\.pnpm\\@wagmi+connectors@3.1.11_@t_fd97fa2244229b57b417e7957031e8b8\\node_modules\\@wagmi\\connectors\\dist\\walletConnect.js -> @walletconnect/ethereum-provider": {
+    "id": 47898,
+    "files": [
+      "static/chunks/916-6b0de2dd31607c3a.js",
+      "static/chunks/898.2b35d4f0feae0b83.js"
+    ]
+  },
+  "node_modules\\.pnpm\\@wagmi+core@1.4.13_@types+r_97422561842df0e648f11b96fcdc50b2\\node_modules\\@wagmi\\core\\dist\\chunk-TSH6VVF4.js -> viem/ens": {
+    "id": 26681,
+    "files": [
+      "static/chunks/681.4743fa9a9ea8514b.js"
+    ]
+  },
+  "node_modules\\.pnpm\\@walletconnect+ethereum-pro_fa440f191eb57d577fdebcc594e7caf1\\node_modules\\@walletconnect\\ethereum-provider\\dist\\index.es.js -> @walletconnect/modal": {
+    "id": 98020,
+    "files": [
+      "static/chunks/20.3d0e5421d333eb0a.js"
+    ]
+  },
+  "node_modules\\.pnpm\\@walletconnect+modal@2.6.2_@types+react@18.3.23_react@18.3.1\\node_modules\\@walletconnect\\modal\\dist\\index.js -> @walletconnect/modal-ui": {
+    "id": 91577,
+    "files": [
+      "static/chunks/577.2be5c50a11005ebc.js"
+    ]
+  },
+  "node_modules\\.pnpm\\viem@1.21.4_typescript@5.8.3_zod@3.25.76\\node_modules\\viem\\_esm\\actions\\public\\call.js -> ../../utils/ccip.js": {
+    "id": 99504,
+    "files": [
+      "static/chunks/504.23e9dd66deba3ba8.js"
+    ]
+  },
+  "node_modules\\.pnpm\\viem@1.21.4_typescript@5.8.3_zod@3.25.76\\node_modules\\viem\\_esm\\utils\\signature\\recoverPublicKey.js -> @noble/curves/secp256k1": {
+    "id": null,
+    "files": []
+  }
+}

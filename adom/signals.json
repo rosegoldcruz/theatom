@@ -1,0 +1,24 @@
+[
+  {
+    "id": "adom-431b1d15-124e-4f34-a2f7-0f4239282cb0",
+    "timestamp": "2025-07-20T23:48:10.123Z",
+    "expires_at": "2025-07-20T23:48:25.123Z",
+    "action": "execute",
+    "token_in": "0xA0b8...USDC",
+    "token_out": "0xC02a...WETH",
+    "amount_in": 1000,
+    "amount_in_unit": "USDC",
+    "amount_out_est": 1004.55,
+    "buy_price": 0.9982,
+    "sell_price": 1.0035,
+    "buy_dex": "UniswapV2",
+    "sell_dex": "SushiSwap",
+    "flash_loan_fee_usd": 0.90,
+    "gas_cost_usd": 1.00,
+    "net_profit_usd": 2.65,
+    "roi": 0.00265,
+    "slippage_tolerance": 0.005,
+    "confidence_score": 0.99,
+    "status": "pending"
+  }
+]

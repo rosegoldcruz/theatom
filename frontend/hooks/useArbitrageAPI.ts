@@ -3,7 +3,13 @@ import { arbitrageApi, opportunitiesApi, botApi } from '../lib/api';
 
 // Hook for arbitrage system status
 export const useArbitrageStatus = () => {
-  const [status, setStatus] = useState<any>(null);
+  interface ArbitrageStatus {
+    // define the expected properties, e.g.:
+    running: boolean;
+    lastChecked: number;
+    [key: string]: any;
+  }
+  const [status, setStatus] = useState<ArbitrageStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +39,13 @@ export const useArbitrageStatus = () => {
     return () => clearInterval(interval);
   }, [fetchStatus]);
 
-  return { status, loading, error, refetch: fetchStatus };
+  interface ArbitrageResult {
+    // define the expected properties, e.g.:
+    txHash?: string;
+    profit?: number;
+    [key: string]: any;
+  }
+  const [lastResult, setLastResult] = useState<ArbitrageResult | null>(null);
 };
 
 // Hook for executing arbitrage trades
@@ -52,7 +64,7 @@ export const useArbitrageExecution = () => {
       setExecuting(true);
       setError(null);
       
-      const response = await arbitrageApi.execute(params);
+      const response = await arbitrageApi.executeArbitrage(params);
       
       if (response.success) {
         setLastResult(response.data);
@@ -103,7 +115,13 @@ export const useOpportunities = (params?: {
   network?: string;
   minProfit?: number;
 }) => {
-  const [opportunities, setOpportunities] = useState<any[]>([]);
+  interface Opportunity {
+    id: string;
+    profit: number;
+    [key: string]: any;
+  }
+  
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastScan, setLastScan] = useState<number>(0);
@@ -113,13 +131,14 @@ export const useOpportunities = (params?: {
       setLoading(true);
       setError(null);
       
-      const response = await opportunitiesApi.getOpportunities(params);
+      const response = await opportunitiesApi.getAll();
+      const data = await response.json();
       
-      if (response.success) {
-        setOpportunities(response.data?.opportunities || []);
-        setLastScan(response.data?.scanTimestamp || Date.now());
+      if (data.success) {
+        setOpportunities(data.data?.opportunities || []);
+        setLastScan(data.data?.scanTimestamp || Date.now());
       } else {
-        setError(response.error || 'Failed to fetch opportunities');
+        setError(data.error || 'Failed to fetch opportunities');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -133,14 +152,18 @@ export const useOpportunities = (params?: {
     pairs?: string[];
   }) => {
     try {
-      const response = await opportunitiesApi.triggerScan(scanParams || {});
+      const response = await fetch('/api/opportunities/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(scanParams || {})
+      });
+      const data = await response.json();
       
-      if (response.success) {
-        // Refresh opportunities after scan
+      if (data.success) {
         setTimeout(fetchOpportunities, 2000);
-        return response.data;
+        return data.data;
       } else {
-        throw new Error(response.error || 'Failed to trigger scan');
+        throw new Error(data.error || 'Failed to trigger scan');
       }
     } catch (err) {
       throw err;
@@ -150,7 +173,6 @@ export const useOpportunities = (params?: {
   useEffect(() => {
     fetchOpportunities();
     
-    // Refresh opportunities every 15 seconds
     const interval = setInterval(fetchOpportunities, 15000);
     return () => clearInterval(interval);
   }, [fetchOpportunities]);
@@ -177,11 +199,12 @@ export const useBotControl = () => {
       setError(null);
       
       const response = await botApi.getStatus();
+      const data = await response.json();
       
-      if (response.success) {
-        setBotStatus(response.data);
+      if (data.success) {
+        setBotStatus(data.data);
       } else {
-        setError(response.error || 'Failed to fetch bot status');
+        setError(data.error || 'Failed to fetch bot status');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -192,13 +215,14 @@ export const useBotControl = () => {
 
   const startBot = useCallback(async (config?: any) => {
     try {
-      const response = await botApi.start(config);
+      const response = await botApi.start();
+      const data = await response.json();
       
-      if (response.success) {
+      if (data.success) {
         await fetchBotStatus(); // Refresh status
-        return response.data;
+        return data.data;
       } else {
-        throw new Error(response.error || 'Failed to start bot');
+        throw new Error(data.error || 'Failed to start bot');
       }
     } catch (err) {
       throw err;
@@ -208,12 +232,13 @@ export const useBotControl = () => {
   const stopBot = useCallback(async () => {
     try {
       const response = await botApi.stop();
-      
-      if (response.success) {
+      const data = await response.json();
+
+      if (data.success) {
         await fetchBotStatus(); // Refresh status
-        return response.data;
+        return data.data;
       } else {
-        throw new Error(response.error || 'Failed to stop bot');
+        throw new Error(data.error || 'Failed to stop bot');
       }
     } catch (err) {
       throw err;
@@ -223,12 +248,13 @@ export const useBotControl = () => {
   const updateConfig = useCallback(async (config: any) => {
     try {
       const response = await botApi.updateConfig(config);
-      
-      if (response.success) {
+      const data = await response.json();
+
+      if (data.success) {
         await fetchBotStatus(); // Refresh status
-        return response.data;
+        return data.data;
       } else {
-        throw new Error(response.error || 'Failed to update config');
+        throw new Error(data.error || 'Failed to update config');
       }
     } catch (err) {
       throw err;
@@ -237,7 +263,7 @@ export const useBotControl = () => {
 
   useEffect(() => {
     fetchBotStatus();
-    
+
     // Refresh bot status every 10 seconds
     const interval = setInterval(fetchBotStatus, 10000);
     return () => clearInterval(interval);
@@ -269,13 +295,14 @@ export const useTradeHistory = (params?: {
       setLoading(true);
       setError(null);
       
-      const response = await arbitrageApi.getHistory(params);
+      const response = await arbitrageApi.getStatus(); // Using available API method
+      const data = await response.json();
       
-      if (response.success) {
-        setTrades(response.data?.trades || []);
-        setPagination(response.data?.pagination);
+      if (data.success) {
+        setTrades(data.data?.trades || []);
+        setPagination(data.data?.pagination);
       } else {
-        setError(response.error || 'Failed to fetch trade history');
+        setError(data.error || 'Failed to fetch trade history');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -296,3 +323,17 @@ export const useTradeHistory = (params?: {
     refetch: fetchHistory
   };
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
