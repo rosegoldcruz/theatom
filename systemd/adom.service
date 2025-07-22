@@ -1,0 +1,36 @@
+[Unit]
+Description=ADOM Python Arbitrage Engine
+Documentation=https://github.com/rosegoldcruz/theatom
+After=network.target fastapi.service
+Wants=network.target
+Requires=fastapi.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/theatom/backend/adom
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=/root/theatom/backend/.env
+ExecStart=/usr/bin/python3 agent.py
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=theatom-adom
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/root/theatom/backend/adom
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=2048
+
+[Install]
+WantedBy=multi-user.target

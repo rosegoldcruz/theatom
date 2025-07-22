@@ -192,27 +192,8 @@ jobs:
         run: |
           cd orchestrator
           npm run build
-          
-      - name: Deploy to Railway
-        run: |
-          npm install -g @railway/cli
-          railway login --token ${{ secrets.RAILWAY_TOKEN }}
-          cd orchestrator
-          railway up --service atom-orchestrator
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          BASE_SEPOLIA_CONTRACT_ADDRESS: ${{ secrets.BASE_SEPOLIA_CONTRACT_ADDRESS }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+
+      # Railway deployment removed - using local deployment only
 
   notify-deployment:
     name: Notify Deployment Status

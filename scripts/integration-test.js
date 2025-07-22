@@ -26,7 +26,7 @@ const TEST_CONFIG = {
   PRIVATE_KEY: process.env.PRIVATE_KEY,
   
   // API settings
-  API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:3000',
+  API_BASE_URL: process.env.API_BASE_URL || 'http://152.42.234.243:8000',
   
   // Database settings
   SUPABASE_URL: process.env.SUPABASE_URL,

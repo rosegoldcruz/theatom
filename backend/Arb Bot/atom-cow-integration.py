@@ -8,7 +8,13 @@ import asyncio
 import json
 import time
 import hashlib
+import sys
+import os
 from typing import Dict, List, Optional, Tuple, Set
+
+# Add agents directory to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../agents'))
+from agent_mev_calculator import AgentMEVCalculator, ArbitrageOpportunity
 from dataclasses import dataclass, field
 from decimal import Decimal
 from eth_account import Account

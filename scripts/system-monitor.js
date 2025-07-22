@@ -39,7 +39,7 @@ const MONITOR_CONFIG = {
   
   // Service URLs
   FRONTEND_URL: process.env.FRONTEND_URL || 'https://atom-arbitrage.vercel.app',
-  ORCHESTRATOR_URL: process.env.ORCHESTRATOR_URL || 'http://localhost:3001',
+  ORCHESTRATOR_URL: process.env.ORCHESTRATOR_URL || 'http://152.42.234.243:8000',
   
   // Database
   SUPABASE_URL: process.env.SUPABASE_URL,

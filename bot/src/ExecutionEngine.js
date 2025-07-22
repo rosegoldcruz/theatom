@@ -8,7 +8,7 @@ class ExecutionEngine {
     this.logger = new Logger('ExecutionEngine');
     
     // Backend API configuration
-    this.backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+    this.backendUrl = process.env.BACKEND_URL || 'http://152.42.234.243:8000';
     this.walletAddress = process.env.WALLET_ADDRESS;
     
     // Execution settings

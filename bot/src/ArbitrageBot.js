@@ -211,7 +211,7 @@ class ArbitrageBot {
   async sendHeartbeat() {
     try {
       const axios = require('axios');
-      const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = process.env.BACKEND_URL || 'http://152.42.234.243:8000';
 
       const heartbeatData = {
         stats: this.stats,

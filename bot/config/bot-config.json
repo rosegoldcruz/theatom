@@ -1,0 +1,62 @@
+{
+  "scanInterval": "*/10 * * * * *",
+  "minProfitThreshold": 0.01,
+  "minProfitMargin": 0.5,
+  "maxGasPrice": 50,
+  "estimatedGasUsed": 300000,
+  "maxConcurrentTrades": 1,
+  "executionTimeout": 60000,
+  "retryAttempts": 3,
+  "tokens": {
+    "WETH": "0x4200000000000000000000000000000000000006",
+    "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "DAI": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb"
+  },
+  "tokenPairs": [
+    {
+      "tokenA": "0x4200000000000000000000000000000000000006",
+      "tokenB": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "amount": 0.1
+    },
+    {
+      "tokenA": "0x4200000000000000000000000000000000000006",
+      "tokenB": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+      "amount": 0.1
+    }
+  ],
+  "dexes": {
+    "uniswap": {
+      "enabled": true,
+      "priority": 1,
+      "quoterAddress": "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
+      "factoryAddress": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24"
+    },
+    "sushiswap": {
+      "enabled": true,
+      "priority": 2,
+      "routerAddress": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
+    }
+  },
+  "riskManagement": {
+    "maxDailyLoss": 0.1,
+    "maxTradeSize": 1,
+    "stopLossEnabled": true,
+    "emergencyStopEnabled": true
+  },
+  "monitoring": {
+    "healthCheckInterval": 30000,
+    "performanceReportInterval": 300000,
+    "alertThresholds": {
+      "consecutiveFailures": 5,
+      "lowProfitability": 0.001,
+      "highGasCosts": 0.05
+    }
+  },
+  "logging": {
+    "level": "info",
+    "maxFileSize": "10MB",
+    "maxFiles": 5,
+    "enableConsole": true,
+    "enableFile": true
+  }
+}

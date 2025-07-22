@@ -1,0 +1,64 @@
+# 🔐 ATOM ARBITRAGE - BACKEND ENVIRONMENT VARIABLES
+# ⚠️  NEVER COMMIT THIS FILE TO VERSION CONTROL
+# ⚠️  CONTAINS PRIVATE KEYS AND SENSITIVE DATA
+# Generated: 2025-01-20
+
+# 🔑 SUPABASE CONFIGURATION (PRIVATE - Full database access)
+SUPABASE_URL="https://nmjvebcauoyqzjlnluos.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tanZlYmNhdW95cXpqbG5sdW9zIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjM0NTAwOSwiZXhwIjoyMDY3OTIxMDA5fQ.PMd7ipZX_KWt2dpqtuoQJriBS1PtLY2etMvdiMBAcJk"
+SUPABASE_JWT_SECRET="r6nBuAQR1p0k14fzLw3/wRNRT1+pEHL+cO7Q3mym2Lsn7jlnieh1bkvElP3GizqzdgtlG/pWhoDuaDePJ4QFJw=="
+
+# 🗄️  DATABASE CONFIGURATION (PRIVATE)
+POSTGRES_URL="postgres://postgres.nmjvebcauoyqzjlnluos:mUJ0WyfcHROXYRjC@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x"
+POSTGRES_PRISMA_URL="postgres://postgres.nmjvebcauoyqzjlnluos:mUJ0WyfcHROXYRjC@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true"
+POSTGRES_URL_NON_POOLING="postgres://postgres.nmjvebcauoyqzjlnluos:mUJ0WyfcHROXYRjC@aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
+POSTGRES_HOST="db.nmjvebcauoyqzjlnluos.supabase.co"
+POSTGRES_USER="postgres"
+POSTGRES_PASSWORD="mUJ0WyfcHROXYRjC"
+POSTGRES_DATABASE="postgres"
+
+# 🔐 ULTRA SENSITIVE - PRIVATE KEYS (NEVER EXPOSE)
+PRIVATE_KEY="29cbe4ddf97fef8655c1be3df8ed6de57ac2eca609a41c782bc6d7039a834edc"
+TESTNET_WALLET_ADDRESS="0x1f62B60669E492b783E1dD1d805fBC7588A8557e"
+
+# 🪙 BLOCKCHAIN RPC PROVIDERS (PRIVATE - Higher rate limits)
+ALCHEMY_KEY="ESBtk3UKjPt2rK2Yz0hnzUj0tIJGTe-d"
+INFURA_KEY="1cf3a0b7a3ac4934aea6c5c80d49306d"
+BASE_SEPOLIA_RPC_URL="https://nameless-misty-pool.base-sepolia.quiknode.pro/6d60e9cd97d2fc31ceade73f41dd089d507fb19b/"
+BASE_SEPOLIA_WSS_URL="wss://nameless-misty-pool.base-sepolia.quiknode.pro/6d60e9cd97d2fc31ceade73f41dd089d507fb19b/"
+
+# 🔧 METAMASK & BUNDLER SERVICES
+METAMASK_BUNDLER="https://bundler.infura.io/v3/1cf3a0b7a3ac4934aea6c5c80d49306d"
+METAMASK_GAS="https://gas.api.infura.io/v3/1cf3a0b7a3ac4934aea6c5c80d49306d"
+
+# 🔑 AUTHENTICATION & SECURITY
+JWT_SECRET="YWJjZGVmZ2hpams="
+SESSION_SECRET="pj8f/vrMeARFmM9kXrq+9ap+DzV45j+FNycPIEsrurE="
+API_SECRET="c4e6708cc2c18c37594b8a7bdde31948892ec0570041aa76cdd6b644d2fa081d"
+DB_ENCRYPTION_KEY="a4169a2298af060976db1ff70303dfc443586bd544a1c0ace45dd2aa063ee331"
+
+# 🔐 NEXTAUTH CONFIGURATION (For backend API authentication)
+NEXTAUTH_SECRET="YWJjZGVmZ2hpams="
+NEXTAUTH_URL="https://AeonInvestmentsTechnologies.com"
+
+# 🌐 APPLICATION CONFIGURATION
+NODE_ENV="production"
+PORT="3001"
+FRONTEND_URL="https://AeonInvestmentsTechnologies.com"
+
+# 🔜 FUTURE INTEGRATIONS (Placeholder)
+# STRIPE_SECRET_KEY=""
+# STRIPE_WEBHOOK_SECRET=""
+# COINGECKO_API_KEY=""
+# ONEINCH_API_KEY=""
+# UNISWAP_API_KEY=""
+
+# 📧 EMAIL CONFIGURATION (Optional)
+# SMTP_HOST=""
+# SMTP_PORT=""
+# SMTP_USER=""
+# SMTP_PASS=""
+
+# 🤖 TELEGRAM BOT (Optional)
+# TELEGRAM_BOT_TOKEN=""
+# TELEGRAM_CHAT_ID=""
