@@ -1,9 +1,10 @@
 {
   "framework": "nextjs",
   "buildCommand": "cd frontend && pnpm run build",
-  "devCommand": "cd frontend && pnpm run dev", 
+  "devCommand": "cd frontend && pnpm run dev",
   "installCommand": "cd frontend && pnpm install",
   "outputDirectory": "frontend/.next",
+  "rootDirectory": "frontend",
   "headers": [
     {
       "source": "/(.*)",
